@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TanyaJHEP • UniMAP AI Assistant</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+    <!-- Left Sidebar: Frequently Asked Questions (Soalan Lazim) -->
+    <aside class="sidebar">
+        <button class="new-chat-btn" onclick="startNewChat()">
+            <span id="newChatLabel">+ Perbualan Baharu</span>
+            <span>✎</span>
+        </button>
+
+        <div class="sidebar-label" id="topicsHeader">Soalan Lazim (FAQ)</div>
+        <div class="sidebar-topics" id="sidebarTopics">
+            <!-- Populated dynamically with distinct FAQ questions -->
+        </div>
+
+        <div class="sidebar-footer">
+            <button class="footer-btn" onclick="openWhatsappModal()">
+                <span>💬</span>
+                <span id="waSidebarLabel">Hubungi Pegawai JHEP</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Centered LLM Stage -->
+    <div class="main-stage">
+
+        <!-- Minimal Topbar -->
+        <header class="topbar">
+            <div class="model-selector">
+                <span>TanyaJHEP</span>
+                <span class="model-tag" id="modelSubtag">Unit Pembiayaan UniMAP</span>
+            </div>
+
+            <div class="lang-Segment">
+                <button class="lang-pill active" id="btnMs" onclick="setLanguage('ms')">Bahasa Melayu</button>
+                <button class="lang-pill" id="btnEn" onclick="setLanguage('en')">English</button>
+            </div>
+        </header>
+
+        <!-- Conversation Scroll Area -->
+        <main class="chat-scroll" id="chatScroll">
+            <div class="chat-column" id="chatColumn">
+                <!-- Greeting Hero or Conversation Turns injected here -->
+            </div>
+        </main>
+
+        <!-- Bottom Floating Composer -->
+        <div class="composer-wrapper">
+            <form class="composer-box" id="composerForm">
+                <input
+                    type="text"
+                    id="userInput"
+                    class="composer-input"
+                    placeholder="Tanya apa sahaja tentang Dermasiswa Sulung, PTPTN, JPA, Surat Pengesahan..."
+                    autocomplete="off"
+                />
+                <button type="submit" class="composer-send" title="Send">
+                    ↑
+                </button>
+            </form>
+            <div class="composer-caption" id="composerCaption">
+                Pembantu AI Rasmi Unit Pembiayaan, Jabatan Hal Ehwal Pelajar (JHEP) UniMAP.
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Direct WhatsApp Officer Escalation Modal -->
+    <div class="modal-backdrop" id="whatsappModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>💬 Tanya Pegawai JHEP (WhatsApp)</h3>
+                <button class="modal-close" onclick="closeWhatsappModal()">&times;</button>
+            </div>
+            <p style="font-size:0.82rem; color:var(--text-secondary); line-height:1.5; margin-bottom:1rem;">
+                Jika soalan anda belum terjawab, hantar terus kepada pegawai Unit Pembiayaan JHEP lengkap dengan No. Matrik anda.
+            </p>
+            <form onsubmit="sendToWhatsapp(event)">
+                <div class="form-field">
+                    <label>Nama Penuh / Full Name</label>
+                    <input type="text" id="waName" class="form-input" placeholder="cth: Ahmad Danial" required />
+                </div>
+                <div class="form-field">
+                    <label>No. Matrik / Matric No.</label>
+                    <input type="text" id="waMatric" class="form-input" placeholder="cth: 261150846" required />
+                </div>
+                <div class="form-field">
+                    <label>Pertanyaan / Question</label>
+                    <textarea id="waQuestion" rows="3" class="form-input" required></textarea>
+                </div>
+                <button type="submit" class="btn-primary-full" style="background:#16A34A;">
+                    Buka WhatsApp Sekarang →
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script src="knowledge_base.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
