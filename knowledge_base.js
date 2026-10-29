@@ -1,16 +1,5 @@
-// UniMAP JHEP - Unit Pembiayaan & Bantuan Kewangan
-// Real Dataset Engine + Conversational Follow-up Memory (Zero API Credits)
-
-const SYNONYMS = {
-    "sulung": ["sulung", "sulong", "anak pertama", "first child", "first generation", "sulung 4.0", "siswa sulung", "ihsan madani", "b40 sulung", "abang", "kakak", "ipts", "ipta", "pasport", "passport"],
-    "db40jpa": ["jpa", "db40", "b40jpa", "dermasiswa b40 jpa", "jabatan perkhidmatan awam", "penajaan jpa", "keputusan jpa", "bantuan jpa"],
-    "b40tvet": ["tvet", "b40tvet", "dermasiswa tvet", "batch kedua", "penangguhan yuran", "tangguh yuran", "defer fee", "deferment"],
-    "ptptn": ["ptptn", "myptptn", "lulus", "kelulusan", "bila masuk", "21 hari", "batal", "cancel", "tolak", "ybr", "bank rakyat", "setem hasil", "lhdn", "saksi", "cop rasmi", "tandatangan", "kursus tidak berdaftar", "rhb", "akaun bank", "pengesahan institut"],
-    "surat": ["surat", "pengesahan", "confirmation", "ktmb", "ets", "ktm", "diskaun", "pengangkutan", "osi", "e-funding", "efunding", "pendapatan", "income", "kwsp", "epf", "aktif belajar", "collect document", "termohon", "delete"],
-    "kebajikan": ["khairat", "kematian", "meninggal", "laptop", "peranti", "komputer", "e-tabung", "etabung", "zakat", "amanah khas", "kebajikan", "welfare"],
-    "joc": ["joc", "job on campus", "kerja", "part time", "sambilan", "mysiswa", "cgee"],
-    "bicycle": ["basikal", "bicycle", "cycling", "kayuh", "riadah", "peraturan basikal"]
-};
+// UniMAP JHEP — Unit Pembiayaan & Bantuan Kewangan
+// Official Structured Dataset from UNIT PEMBIAYAAN.md (78 Structured Q&As + Bilingual Support + Conversational Memory)
 
 const STOPWORDS = new Set([
     "i", "me", "my", "we", "our", "you", "your", "is", "are", "was", "were", "be", "been",
@@ -21,409 +10,577 @@ const STOPWORDS = new Set([
     "di", "ke", "dari", "pada", "untuk", "dengan", "oleh", "tentang", "adalah", "ialah",
     "macam", "mana", "apa", "bila", "siapa", "kenapa", "mengapa", "nak", "tahu", "tanya",
     "boleh", "tak", "tidak", "ada", "dekat", "kat", "tolong", "minta", "berapa", "kalau", "jika",
-    "assalamualaikum", "salam", "sejahtera", "tuan", "puan", "encik", "cik", "dr", "terima", "kasih", "maaf", "ganggu"
+    "assalamualaikum", "salam", "sejahtera", "tuan", "puan", "encik", "cik", "dr", "terima", "kasih", "maaf", "ganggu",
+    "bagaimanakah", "apakah", "bilakah", "berapakah", "siapakah", "adakah", "bolehkah", "dimanakah"
 ]);
 
-// Curated Official Knowledge Base with Distinct Sidebar FAQ Titles
-const KNOWLEDGE_BASE = [
-    {
-        id: "sulung_selection",
-        refCode: "PTN-SULUNG-01",
-        category: "Dermasiswa Sulung",
-        faqTitle: {
-            ms: "Permohonan & Kelayakan Siswa SULUNG 4.0",
-            en: "Siswa SULUNG 4.0 Eligibility & Screening"
-        },
-        keywords: ["sulung", "sulong", "mohon", "apply", "kelayakan", "anak pertama", "first child", "b40", "str", "lulus", "keputusan", "pngk", "stpm", "ipts", "kakak", "abang", "ibu tunggal", "anak yatim"],
-        questions: {
-            en: "How do I apply for Dermasiswa Siswa SULUNG 4.0 and check eligibility?",
-            ms: "Bagaimana cara memohon Dermasiswa Siswa SULUNG 4.0 dan syarat kelayakannya?"
-        },
-        answer: {
-            en: `###Program Pembangunan Siswa SULUNG 4.0
-**Official Unit Pembiayaan JHEP Notice:**
-- **Selection Process**: Selection for **Siswa SULUNG** is conducted via **university-level screening (saringan peringkat universiti)**. We do not open manual walk-in applications; **eligible students will be contacted directly** by JHEP.
-- **Older Sibling at IPTS?**: Yes, if your older sibling studied at a private institution (IPTS) and you are the **first child in the family pursuing a Bachelor's Degree at a public university (IPTA)**, you are still eligible to be screened.
-- **Already Applied/Approved for PTPTN?**: Students receiving a **PTPTN loan can still receive SULUNG benefits** if they fulfill the eligibility criteria.
-- **BKOKU Overlap**: Currently under verification with the Ministry of Higher Education (KPT).
-- **Other Financial Aid**: Check the official JHEP portal at [https://jhep.unimap.edu.my/index.php/en/](https://jhep.unimap.edu.my/index.php/en/)`,
-            ms: `###Program Pembangunan Siswa SULUNG 4.0
-**Makluman Rasmi Unit Pembiayaan JHEP:**
-- **Kaedah Pemilihan**: Pemilihan bagi **Program Siswa SULUNG** adalah berdasarkan **saringan di peringkat universiti**. Pihak JHEP tidak membuka permohonan secara terbuka—**sekiranya layak, pelajar akan dihubungi terus** oleh pihak universiti.
-- **Kakak/Abang Belajar di IPTS?**: **Layak disaring** sekiranya anda merupakan anak pertama dalam keluarga yang melanjutkan pengajian peringkat Ijazah Sarjana Muda di **IPTA (Universiti Awam)**.
-- **Sudah Lulus / Terima PTPTN?**: Pelajar yang menerima pinjaman **PTPTN masih boleh mendapat manfaat SULUNG** sekiranya memenuhi syarat kelayakan.
-- **Pertindihan SULUNG & BKOKU**: Pihak JHEP sedang membuat semakan semula bersama pihak Kementerian Pendidikan Tinggi (KPT).
-- **Bantuan Lain**: Rujuk laman rasmi JHEP UniMAP di [https://jhep.unimap.edu.my/index.php/en/](https://jhep.unimap.edu.my/index.php/en/)`
-        },
-        quickActions: [
-            { label: { en: "Parent Passport / Missing Town Issue", ms: "Isu Pasport Bapa / Tiada Nama Bandar" }, query: { en: "What if my parent uses a foreign Passport or my town is missing in the SULUNG form?", ms: "Bagaimana jika ibu/bapa guna Pasport (tiada No. IC) atau nama bandar tiada dalam sistem SULUNG?" } },
-            { label: { en: "Dermasiswa B40 JPA Status", ms: "Status Dermasiswa B40 JPA" }, query: { en: "When can I apply or check results for Dermasiswa B40 JPA (DB40)?", ms: "Bilakah tarikh permohonan dan semakan keputusan Dermasiswa B40 JPA (DB40)?" } }
-        ]
-    },
-    {
-        id: "sulung_technical_form",
-        refCode: "PTN-SULUNG-02",
-        category: "Dermasiswa Sulung",
-        faqTitle: {
-            ms: "Isu Borang SULUNG (Pasport & Tiada Bandar)",
-            en: "SULUNG Form Issues (Passport & Missing Town)"
-        },
-        keywords: ["pasport", "passport", "ic", "kad pengenalan", "bapa", "ibu", "warganegara", "bandar", "poskod", "changlun", "tasek gelugor", "kampung gajah", "batu gajah", "alamat"],
-        questions: {
-            en: "What if my parent uses a foreign Passport (no MyKad IC) or my town is missing in the SULUNG form?",
-            ms: "Bagaimana jika ibu/bapa guna Pasport (tiada No. IC) atau nama bandar tiada dalam sistem SULUNG?"
-        },
-        answer: {
-            en: `###Solving Form Issues (Passport & Address Drop-down)
-1. **Parent Holds a Foreign Passport (No Malaysian IC Number)**:
-   - If the Father/Mother IC field only accepts a Malaysian IC format, **leave the IC field blank (kosongkan)** and clearly state in the **"Tujuan Permohonan" (Application Purpose)** remarks box that your parent holds a passport and does not have a Malaysian IC.
-2. **Town / Postcode Missing in Drop-down (e.g., Changlun, Tasek Gelugor, Kampung Gajah)**:
-   - Select the **nearest listed district/town** in the drop-down so the form can proceed, and ensure your full exact address and postcode are written in the address line.`,
-            ms: `###Penyelesaian Isu Borang (Pasport Ibu/Bapa & Pilihan Bandar)
-1. **Ibu/Bapa Menggunakan Pasport (Tiada No. Kad Pengenalan Malaysia)**:
-   - Jika ruangan maklumat bapa/ibu hanya membenarkan format No. KP Malaysia, **sila kosongkan ruangan tersebut** dan nyatakan di bahagian **"Tujuan Permohonan"** bahawa bapa/ibu menggunakan pasport serta tiada No. KP Malaysia.
-2. **Tiada Pilihan Bandar Dalam Sistem (Contoh: Changlun, Tasek Gelugor, Kg. Gajah)**:
-   - Pilih **bandar/daerah berdekatan** yang tersenarai dalam pilihan sistem supaya permohonan boleh dihantar, dan pastikan alamat penuh beserta poskod sebenar ditulis pada ruangan alamat.`
-        },
-        quickActions: [
-            { label: { en: "SULUNG Eligibility & PTPTN", ms: "Kelayakan SULUNG & PTPTN" }, query: { en: "How do I apply for Dermasiswa Siswa SULUNG 4.0 and check eligibility?", ms: "Bagaimana cara memohon Dermasiswa Siswa SULUNG 4.0 dan syarat kelayakannya?" } }
-        ]
-    },
-    {
-        id: "db40_jpa",
-        refCode: "PTN-DB40JPA-01",
-        category: "Dermasiswa B40JPA",
-        faqTitle: {
-            ms: "Tarikh & Keputusan Dermasiswa B40 JPA",
-            en: "Dermasiswa B40 JPA (DB40) Dates & Results"
-        },
-        keywords: ["jpa", "db40", "b40jpa", "dermasiswa b40 jpa", "bila boleh mohon", "keputusan jpa", "penajaan jpa", "tarikh buka jpa", "bantuan jpa"],
-        questions: {
-            en: "When can I apply or check results for Dermasiswa B40 JPA (DB40)?",
-            ms: "Bilakah tarikh permohonan dan semakan keputusan Dermasiswa B40 JPA (DB40)?"
-        },
-        answer: {
-            en: `###Dermasiswa B40 JPA (DB40) Application & Results
-1. **2026 Application Status & Result Check**:
-   - The 2026 DB40 JPA application window ran from **3 August 2026 to 16 August 2026** and is now closed.
-   - **2026 Results Window**: Open for checking from **13 October 2026 (5:00 PM) until 22 October 2026 (5:00 PM)** via the JPA Sponsorship Portal.
-2. **2027 Intake**:
-   - Official opening dates for the 2027 cycle have not yet been announced. Please monitor the official JPA Sponsorship Portal periodically:
-   - 🔗 [https://penajaan.jpa.gov.my/](https://penajaan.jpa.gov.my/)`,
-            ms: `###Permohonan & Keputusan Dermasiswa B40 JPA (DB40)
-1. **Status Permohonan & Semakan Keputusan Tahun 2026**:
-   - Permohonan Program Dermasiswa B40 (DB40) JPA bagi tahun 2026 telah dibuka pada **3 Ogos 2026 hingga 16 Ogos 2026** dan kini telah ditutup.
-   - **Semakan Keputusan DB40 2026**: Dibuka mulai **13 Oktober 2026 (5:00 petang) hingga 22 Oktober 2026 (5:00 petang)**.
-   - **Cara Semak**: Layari Portal Penajaan JPA -> Log Masuk -> Semak status keputusan DB40.
-2. **Permohonan Sesi 2027**:
-   - Tarikh pembukaan rasmi masih belum diumumkan. Pelajar dimohon membuat semakan berkala melalui portal rasmi Penajaan JPA:
-   - 🔗 [https://penajaan.jpa.gov.my/](https://penajaan.jpa.gov.my/)`
-        },
-        quickActions: [
-            { label: { en: "Cancel PTPTN after getting JPA/YBR", ms: "Batal PTPTN Selepas Dapat JPA/YBR" }, query: { en: "Can I apply for PTPTN, Yayasan Bank Rakyat (YBR), and Zakat together? How do I cancel PTPTN if offered another scholarship?", ms: "Bolehkah mohon PTPTN, Yayasan Bank Rakyat (YBR) & Zakat serentak? Bagaimana cara batalkan PTPTN jika dapat tajaan lain?" } }
-        ]
-    },
-    {
-        id: "b40_tvet_deferment",
-        refCode: "PTN-TVET-01",
-        category: "Dermasiswa B40TVET",
-        faqTitle: {
-            ms: "Dermasiswa B40 TVET & Tangguh Yuran",
-            en: "Dermasiswa B40 TVET & Fee Deferment"
-        },
-        keywords: ["tvet", "b40tvet", "dermasiswa b40 tvet", "batch kedua", "tangguh yuran", "penangguhan bayaran yuran", "borang penangguhan", "fakulti", "kpt", "final exam", "risau duit yuran"],
-        questions: {
-            en: "How does Dermasiswa B40 TVET selection work, and how do recipients defer tuition fees?",
-            ms: "Bagaimana pemilihan Dermasiswa B40 TVET dan cara tangguh yuran bagi penerima?"
-        },
-        answer: {
-            en: `###Dermasiswa B40 TVET & Tuition Fee Deferment
-1. **Selection Method**:
-   - Selection for **Dermasiswa B40 TVET** is based on **university-level screening**. Applications are not opened manually; eligible students will be contacted directly.
-2. **Important Notice for B40 TVET Recipients (Batch 2 / Pending KPT Disbursement)**:
-   - The Ministry of Higher Education (KPT) is currently processing the fund disbursement.
-   - **Do You Need to Pay Fees Before Final Exams?**: Recipients are requested to fill out the **Tuition Fee Payment Deferment Form (Borang Penangguhan Bayaran Yuran)** at your **respective Faculty Office (Pejabat Fakulti masing-masing)**.
-   - **Required Attachment**: Attach your **Dermasiswa B40 TVET Offer Letter (Surat Tawaran)** together with the deferment form.`,
-            ms: `###Dermasiswa B40 TVET & Penangguhan Yuran Pengajian
-1. **Kaedah Pemilihan**:
-   - Pemilihan **Dermasiswa B40 TVET** adalah berdasarkan **saringan di peringkat universiti**. Permohonan tidak dibuka secara manual dan pelajar yang layak akan dihubungi.
-2. **Pemakluman Khas Penerima Dermasiswa B40 TVET (Batch Kedua / Dana KPT Sedang Disalurkan)**:
-   - Pihak Kementerian Pendidikan Tinggi (KPT) sedang dalam proses penyaluran dana kepada pelajar terlibat.
-   - **Urusan Penangguhan Yuran**: Pelajar diminta mengisi **Borang Penangguhan Bayaran Yuran** di **Pejabat Fakulti masing-masing** (bukan di kaunter JHEP).
-   - **Dokumen Lampiran**: Sila lampirkan **Surat Tawaran Dermasiswa B40 TVET** bersama-sama borang penangguhan tersebut.`
-        },
-        quickActions: [
-            { label: { en: "Check Fee Status (Bendahari)", ms: "Semak Status Yuran (Bendahari)" }, query: { en: "Who do I contact for KWSP university verification, PTPTN institution verification, RHB bank account issues, or uncredited OSI fees?", ms: "Siapa perlu dihubungi bagi pengesahan universiti KWSP/PTPTN, masalah akaun bank RHB, atau yuran dalam OSI masih belum ditolak?" } }
-        ]
-    },
-    {
-        id: "ptptn_status_disbursement",
-        refCode: "PTN-PTPTN-01",
-        category: "PTPTN",
-        faqTitle: {
-            ms: "Kelulusan PTPTN, Cop Saksi & Setem Hasil",
-            en: "PTPTN Approval, Witness Stamp & Setem Hasil"
-        },
-        keywords: ["ptptn", "lulus", "kelulusan", "bila dapat", "bila masuk", "21 hari", "myptptn", "kursus tidak berdaftar", "senarai program", "saksi", "cop rasmi", "tandatangan", "setem hasil", "lhdn", "bawah 18", "li", "latihan industri"],
-        questions: {
-            en: "How do I check PTPTN approval, payment timeline (21 working days), witness stamp, or registered courses?",
-            ms: "Bagaimana cara semak kelulusan PTPTN, tarikh duit masuk (21 hari bekerja), cop saksi JHEP & senarai kursus?"
-        },
-        answer: {
-            en: `###Complete PTPTN Guide (Approval, Disbursement, Witness Stamp & Courses)
-1. **How to Check PTPTN Approval**:
-   - Log in to **myPTPTN** -> *Pinjaman Pendidikan* -> *Semakan Status Permohonan*.
-   - *Note*: Loan approval and money disbursement are two separate stages.
-2. **When Will PTPTN Money Be Credited?**:
-   - First payment is credited within **21 working days** after PTPTN receives your complete agreement documents.
-3. **Official Witness Signature & Stamp (Tandatangan & Cop Saksi JHEP)**:
-   - Bring your physical PTPTN agreement forms directly to the **JHEP Office Counter (Kampus Alam Pauh Putra)** during office hours (8:00 AM – 5:00 PM) to get the official witness signature and stamp.
-4. **RM10 Revenue Stamp (Setem Hasil) / LHDN Enquiries (Under 18)**:
-   - You may submit your Setem Hasil at the **Unit Pembiayaan Counter, JHEP**. For LHDN stamp duty issues (e.g., under 18 years old), contact LHDN Agent **Pn. Wani at 013-450 8066**.
-5. **PTPTN Rejected Due to Unregistered Course Name?**:
-   - Check the exact PTPTN-registered UniMAP programme list here:
-   - 🔗 [https://sites.google.com/unimap.edu.my/unitpembiayaanjhep/permohonan-ptptn/senarai-program](https://sites.google.com/unimap.edu.my/unitpembiayaanjhep/permohonan-ptptn/senarai-program)
-6. **PTPTN Inquiries During Industrial Training (LI) / Final Semester**:
-   - Call Unit Pembiayaan JHEP at **04-941 4431** or contact PTPTN Perlis Branch.`,
-            ms: `###Panduan Lengkap PTPTN (Kelulusan, Tarikh Bayaran, Cop Saksi & Kursus)
-1. **Cara Semak Kelulusan PTPTN**:
-   - Log masuk ke portal **myPTPTN** → *Pinjaman Pendidikan* → *Semakan Status Permohonan*.
-   - *Nota*: Kelulusan pinjaman dan pengkreditan wang adalah dua proses berbeza.
-2. **Bila Duit PTPTN Akan Masuk?**:
-   - Bayaran pertama dikreditkan dalam tempoh **21 hari bekerja** daripada tarikh PTPTN menerima dokumen perjanjian lengkap.
-3. **Prosedur Tandatangan & Cop Rasmi Saksi JHEP**:
-   - Cetak dokumen perjanjian PTPTN anda dan bawa terus ke **Kaunter Unit Pembiayaan, Pejabat JHEP (Kampus Alam Pauh Putra)** pada waktu pejabat (8:00 pagi – 5:00 petang) untuk mendapatkan tandatangan dan cop rasmi saksi.
-4. **Setem Hasil RM10 & Urusan LHDN (Pelajar Bawah 18 Tahun)**:
-   - Setem hasil boleh dihantar di **Kaunter Unit Pembiayaan, JHEP**. Bagi pertanyaan berkaitan LHDN (termasuk isu umur bawah 18 tahun), hubungi Agen LHDN **Pn. Wani: 013-450 8066**.
-5. **Permohonan Ditolak Kerana Nama Kursus Tidak Berdaftar?**:
-   - Semak senarai rasmi program pengajian UniMAP yang berdaftar dengan PTPTN di pautan ini:
-   - 🔗 [https://sites.google.com/unimap.edu.my/unitpembiayaanjhep/permohonan-ptptn/senarai-program](https://sites.google.com/unimap.edu.my/unitpembiayaanjhep/permohonan-ptptn/senarai-program)
-6. **Pertanyaan Lanjut / Isu Bayaran Semasa Latihan Industri (LI)**:
-   - Hubungi Unit Pembiayaan JHEP di talian **04-941 4431**.`
-        },
-        quickActions: [
-            { label: { en: "Cancel PTPTN for YBR/JPA", ms: "Batal PTPTN Kerana Dapat YBR/JPA" }, query: { en: "Can I apply for PTPTN, Yayasan Bank Rakyat (YBR), and Zakat together? How do I cancel PTPTN if offered another scholarship?", ms: "Bolehkah mohon PTPTN, Yayasan Bank Rakyat (YBR) & Zakat serentak? Bagaimana cara batalkan PTPTN jika dapat tajaan lain?" } },
-            { label: { en: "RHB Bank / OSI Fee Not Deducted", ms: "Isu Akaun RHB / Yuran OSI Belum Ditolak" }, query: { en: "Who do I contact for KWSP university verification, PTPTN institution verification, RHB bank account issues, or uncredited OSI fees?", ms: "Siapa perlu dihubungi bagi pengesahan universiti KWSP/PTPTN, masalah akaun bank RHB, atau yuran dalam OSI masih belum ditolak?" } }
-        ]
-    },
-    {
-        id: "ptptn_cancel_multiple_sponsors",
-        refCode: "PTN-PTPTN-02",
-        category: "PTPTN",
-        faqTitle: {
-            ms: "Cara Batal PTPTN (Jika Dapat YBR / JPA)",
-            en: "Canceling PTPTN (When Offered YBR / JPA)"
-        },
-        keywords: ["batal", "cancel", "ybr", "yayasan bank rakyat", "zakat", "bertindih", "bayar balik", "borang penolakan", "borang pembatalan"],
-        questions: {
-            en: "Can I apply for PTPTN, Yayasan Bank Rakyat (YBR), and Zakat together? How do I cancel PTPTN if offered another scholarship?",
-            ms: "Bolehkah mohon PTPTN, Yayasan Bank Rakyat (YBR) & Zakat serentak? Bagaimana cara batalkan PTPTN jika dapat tajaan lain?"
-        },
-        answer: {
-            en: `###Managing Multiple Applications (PTPTN + YBR + Zakat) & Canceling PTPTN
-1. **How to Cancel PTPTN After Getting YBR / JPA**:
-   - **If you HAVE NOT submitted the PTPTN agreement**: Fill out the *PTPTN Loan Offer Rejection Form (Borang Penolakan Tawaran Pinjaman PTPTN)*.
-   - **If you HAVE submitted the agreement / loan is active**: Fill out the *PTPTN Loan Cancellation Form (Borang Pembatalan Pinjaman Pendidikan PTPTN)* + official cover letter + copy of your **YBR / JPA Offer Letter**.
-   - **If PTPTN money was already credited**: **Do not manually pay it back first.** Check with PTPTN for the exact settlement amount, then pay via myPTPTN, online banking, or counter.
-2. **Applying for PTPTN, Yayasan Bank Rakyat (YBR) & Zakat**:
-   - You may prepare documents and apply early via [ptptn.gov.my](https://www.ptptn.gov.my/) and [yayasanbankrakyat.com.my](https://www.yayasanbankrakyat.com.my/).
-   - Declare honestly when applying for Zakat if you hold PTPTN. Never hold two overlapping sponsorships for the same tuition cost without sponsor approval.`,
-            ms: `###Aliran Permohonan (PTPTN + YBR + Zakat) & Prosedur Batal PTPTN
-1. **Cara Batalkan PTPTN Jika Berjaya Dapat YBR / JPA**:
-   - **Belum pulangkan perjanjian PTPTN**: Isi *Borang Penolakan Tawaran Pinjaman PTPTN*.
-   - **Sudah pulangkan perjanjian / pinjaman sedang berjalan**: Isi *Borang Pembatalan Pinjaman Pendidikan PTPTN* + surat permohonan rasmi + salinan *Surat Tawaran YBR/JPA*.
-   - **Jika duit PTPTN sudah masuk akaun**: **Jangan terus bayar sendiri dahulu.** Semak dengan PTPTN jumlah sebenar yang perlu diselesaikan, kemudian buat bayaran melalui myPTPTN, perbankan internet, atau kaunter.
-2. **Panduan Mohon PTPTN, Yayasan Bank Rakyat & Zakat**:
-   - Pelajar boleh menyemak syarat dan memohon di [ptptn.gov.my](https://www.ptptn.gov.my/) serta memantau pembukaan portal [yayasanbankrakyat.com.my](https://www.yayasanbankrakyat.com.my/).
-   - Bagi permohonan Zakat, maklumkan dengan jujur status pembiayaan sedia ada. Pastikan tiada pembiayaan berganda yang bercanggah dengan syarat penaja.`
-        },
-        quickActions: [
-            { label: { en: "Update Sponsor Status in OSI", ms: "Kemaskini Status Penaja Dalam OSI" }, query: { en: "Who do I contact for KWSP university verification, PTPTN institution verification, RHB bank account issues, or uncredited OSI fees?", ms: "Siapa perlu dihubungi bagi pengesahan universiti KWSP/PTPTN, masalah akaun bank RHB, atau yuran dalam OSI masih belum ditolak?" } }
-        ]
-    },
-    {
-        id: "bendahari_kwsp_rhb_fees",
-        refCode: "PTN-BENDAHARI-01",
-        category: "PTPTN",
-        faqTitle: {
-            ms: "Urusan KWSP, Akaun RHB & Status Yuran OSI",
-            en: "KWSP Verification, RHB Account & OSI Fees"
-        },
-        keywords: ["bendahari", "kewangan", "rhb", "akaun bank", "kwsp", "epf", "pengesahan universiti", "pengesahan institut", "yuran belum ditolak", "osi", "zakat selangor", "04-941 4033"],
-        questions: {
-            en: "Who do I contact for KWSP university verification, PTPTN institution verification, RHB bank account issues, or uncredited OSI fees?",
-            ms: "Siapa perlu dihubungi bagi pengesahan universiti KWSP/PTPTN, masalah akaun bank RHB, atau yuran dalam OSI masih belum ditolak?"
-        },
-        answer: {
-            en: `###Jabatan Bendahari (Student Finance Unit) Matters
-For the following financial account and verification matters, they are handled directly by **Jabatan Bendahari UniMAP**:
-1. **KWSP (EPF) "In Process for University Verification"**:
-   - Means your application is currently being verified by the university. Monitor your KWSP portal; no new form is needed unless instructed.
-2. **PTPTN Institution Verification / RHB Panel Bank Account Issues**:
-   - If you cannot open an RHB panel account or need institution confirmation status.
-3. **PTPTN / Allowance Credited, But OSI Fees Still Show Unpaid**:
-   - Contact Jabatan Bendahari to check your student ledger reconciliation.
-4. **Updating Sponsor Status in OSI (e.g., Ended KWSP -> Now Receiving Lembaga Zakat Selangor)**:
-   - Submit a copy of your new sponsorship verification form (e.g., Zakat Selangor) to **Jabatan Bendahari** to update your OSI status.
+// Bilingual Synonym Map so English & casual Malay queries match the exact row in UNIT PEMBIAYAAN.md
+const SYNONYM_EXPANSIONS = {
+    "deadline": ["tarikh buka", "tarikh tutup", "jadual permohonan", "bila buka"],
+    "course": ["kod program", "kursus layak", "program berdaftar"],
+    "bank": ["bank panel", "rhb islamic", "akaun bank"],
+    "amount": ["jumlah pinjaman", "100%", "75%", "50%", "kadar pinjaman"],
+    "apply": ["cara mohon", "permohonan online", "memohon"],
+    "register": ["daftar myptptn", "log masuk"],
+    "pin": ["pin bsn", "nombor pin", "rm5"],
+    "sspn": ["sspn prime", "simpanan minimum", "rm20"],
+    "age": ["umur maksimum", "had umur", "45 tahun"],
+    "result": ["keputusan ptptn", "semakan kelulusan", "5 hari bekerja"],
+    "agreement": ["terima tawaran", "dokumen perjanjian", "hantar perjanjian", "serahan online"],
+    "digital": ["tandatangan digital", "mydigital id", "rm25", "24 jam bekerja"],
+    "disbursement": ["duit ptptn", "dikreditkan", "21 hari bekerja", "bila masuk"],
+    "wpp": ["wang pendahuluan pinjaman", "rm1500", "bank islam", "tebus wpp", "potongan rm500"],
+    "baek": ["biasiswa anak ekasih", "ekasih", "baek ptptn"],
+    "gpa": ["pengeluaran semester", "png", "pngk", "2.0", "semester seterusnya"],
+    "tuition": ["potongan yuran", "bendahari", "yuran pengajian"],
+    "terminated": ["diberhentikan", "dihentikan", "muflis"],
+    "change": ["tukar program", "tukar kursus", "pertukaran program", "rayuan pertukaran"],
+    "repayment": ["bayaran balik", "12 bulan", "ujrah"],
+    "deferment": ["penangguhan bayaran balik", "tangguh bayaran", "tidak bekerja", "menganggur", "sambung belajar", "24 bulan", "ccris"],
+    "firstclass": ["kelas pertama", "pengecualian bayaran balik", "b40", "m40", "belanjawan 2026", "skrol", "transkrip", "refund", "lebihan bayaran"],
+    "contact": ["nombor telefon", "04-941 4431", "04-970 8181", "hubungi"]
+};
 
-📞 **Direct Contact (Jabatan Bendahari UniMAP)**:
-- **Unit Kewangan Pelajar**: **04-941 4033**
-- **Alternative Lines**: **04-941 4021 / 04-941 4121**`,
-            ms: `###Urusan Kewangan Pelajar & Jabatan Bendahari UniMAP
-Perkara berikut diuruskan secara terus oleh **Unit Kewangan Pelajar, Jabatan Bendahari UniMAP**:
-1. **Status KWSP "Sedang Dalam Proses Untuk Pengesahan Universiti"**:
-   - Bermaksud permohonan sedang disahkan oleh pihak universiti. Semak portal KWSP dari semasa ke semasa (tidak perlu isi borang tambahan melainkan diarahkan).
-2. **Status Pengesahan Institut PTPTN & Masalah Pembukaan Akaun Bank RHB**:
-   - Jika akaun bank panel RHB tidak dapat dibuka atau ingin menyemak tarikh pengesahan institut.
-3. **Duit PTPTN / Elaun Sudah Masuk Tetapi Yuran Dalam OSI Masih Belum Ditolak**:
-   - Hubungi Unit Kewangan Pelajar untuk semakan penyata lejar.
-4. **Kemaskini Status Bantuan Dalam OSI (Contoh: Tamat KWSP -> Terima Zakat Selangor)**:
-   - Kemukakan salinan borang pengesahan/dokumen bantuan baharu kepada **Jabatan Bendahari** untuk kemas kini rekod OSI.
+// Complete 78-Item Dataset from UNIT PEMBIAYAAN.md + Key UniMAP Dermasiswa & OSI FAQs
+const UNIT_PEMBIAYAAN_DATA = [
+    // --- BAHAGIAN 1: PERMOHONAN & PENGURUSAN PINJAMAN PTPTN ---
+    {
+        id: "ptptn_01",
+        section: "Permohonan & Pinjaman PTPTN",
+        featuredFaq: true,
+        faqLabel: { ms: "Tarikh Buka & Tutup Permohonan PTPTN", en: "PTPTN Application Opening & Closing Dates" },
+        soalan_utama: "Bilakah tarikh buka dan tutup permohonan PTPTN?",
+        soalan_en: "When are the opening and closing dates for PTPTN loan applications?",
+        soalan_alternatif: "Bila permohonan PTPTN dibuka? Bila tarikh akhir mohon PTPTN? When is PTPTN deadline?",
+        kata_kunci: ["tarikh buka", "tarikh tutup", "jadual permohonan", "deadline ptptn", "kelompok", "bila buka"],
+        jawapan_rasmi: "Tarikh permohonan PTPTN adalah mengikut jadual yang ditetapkan bagi IPT dan kelompok pengajian masing-masing. Pelajar perlu menyemak jadual permohonan dalam myPTPTN dan saluran hebahan rasmi universiti.",
+        jawapan_en: "PTPTN application dates follow the schedule set for each institution (IPT) and intake batch. Students should check the application schedule in myPTPTN and the university's official announcement channels.",
+        pautan: [
+            { label: "Semakan myPTPTN", url: "https://myptptn.ptptn.gov.my/ptptn/app/semakan" },
+            { label: "Portal Unit Pembiayaan JHEP", url: "https://sites.google.com/unimap.edu.my/unitpembiayaanjhep/" },
+            { label: "Saluran WhatsApp Rasmi Unit Pembiayaan", url: "https://whatsapp.com/channel/0029Vb0f9j6ElagrCFT2731y" }
+        ]
+    },
+    {
+        id: "ptptn_02",
+        section: "Permohonan & Pinjaman PTPTN",
+        soalan_utama: "Bagaimanakah cara menyemak program pengajian yang layak menerima pinjaman PTPTN?",
+        soalan_en: "How do I check if my study programme is eligible for a PTPTN loan?",
+        soalan_alternatif: "Adakah kursus saya layak PTPTN? Bagaimana nak semak kod program? Check eligible course code",
+        kata_kunci: ["kod program", "kursus layak", "program berdaftar", "kelayakan kursus", "surat tawaran"],
+        jawapan_rasmi: "Pelajar perlu menyemak sama ada program pengajian berdaftar dan diluluskan oleh PTPTN. Pastikan nama program yang dipilih sama dengan nama dalam surat tawaran pengajian.",
+        jawapan_en: "Students must verify that their study programme is registered and approved by PTPTN. Ensure the selected programme name matches the exact name stated in your university offer letter.",
+        pautan: [
+            { label: "Semakan Kelayakan Program myPTPTN", url: "https://myptptn.ptptn.gov.my/ptptn/app/semakan" },
+            { label: "Senarai Kod Program UniMAP", url: "https://sites.google.com/unimap.edu.my/unitpembiayaanjhep/ptptn/kod-program-ptptn" }
+        ]
+    },
+    {
+        id: "ptptn_03",
+        section: "Permohonan & Pinjaman PTPTN",
+        featuredFaq: true,
+        faqLabel: { ms: "Bank Panel PTPTN UniMAP (RHB Islamic)", en: "UniMAP PTPTN Panel Bank (RHB Islamic)" },
+        soalan_utama: "Apakah bank panel bagi pelajar UniMAP?",
+        soalan_en: "Which panel bank is required for UniMAP students applying for PTPTN?",
+        soalan_alternatif: "Bank mana perlu dibuka untuk PTPTN? Akaun bank apa digunakan? What bank account for UniMAP PTPTN?",
+        kata_kunci: ["bank panel", "akaun bank", "rhb islamic", "rhb", "pengkreditan pinjaman"],
+        jawapan_rasmi: "Pelajar UniMAP perlu mempunyai akaun bank panel yang ditetapkan, iaitu **RHB Islamic Bank**, bagi urusan pengkreditan wang pinjaman.",
+        jawapan_en: "UniMAP students are required to hold an account with the designated panel bank, which is **RHB Islamic Bank**, for PTPTN loan disbursement.",
+        pautan: [
+            { label: "Panduan Permohonan PTPTN UniMAP", url: "https://sites.google.com/unimap.edu.my/unitpembiayaanjhep/ptptn/permohonan" },
+            { label: "Portal myPTPTN", url: "https://myptptn.ptptn.gov.my/ptptn/app/semakan" }
+        ]
+    },
+    {
+        id: "ptptn_04",
+        section: "Permohonan & Pinjaman PTPTN",
+        soalan_utama: "Bagaimanakah kelayakan jumlah pinjaman PTPTN ditentukan?",
+        soalan_en: "How is the PTPTN loan amount eligibility (100%, 75%, or 50%) determined?",
+        soalan_alternatif: "Saya dapat pinjaman 100%, 75% atau 50%? Berapa jumlah pinjaman saya? How much loan will I get?",
+        kata_kunci: ["jumlah pinjaman", "kelayakan pinjaman", "100%", "75%", "50%", "pendapatan keluarga", "str", "kadar pinjaman"],
+        jawapan_rasmi: "Kadar pinjaman bergantung pada kategori kelayakan yang ditetapkan PTPTN. Berdasarkan panduan yang diberikan, kadar maksimum (100%), 75% atau 50% ditentukan mengikut status penerima STR dan pendapatan keluarga. Semak kelayakan sebenar melalui myPTPTN.",
+        jawapan_en: "The loan tier depends on PTPTN's eligibility categories. Maximum (100%), 75%, or 50% financing rates are determined by Sumbangan Tunai Rahmah (STR) recipient status and household income. Check your exact rate via myPTPTN.",
+        pautan: [
+            { label: "Semakan myPTPTN", url: "https://myptptn.ptptn.gov.my/ptptn/app/semakan" },
+            { label: "Maklumat Pinjaman Pendidikan PTPTN", url: "https://www.ptptn.gov.my/pinjaman-pendidikan/" }
+        ]
+    },
+    {
+        id: "ptptn_05",
+        section: "Permohonan & Pinjaman PTPTN",
+        soalan_utama: "Apakah syarat permohonan pinjaman PTPTN?",
+        soalan_en: "What are the eligibility requirements to apply for a PTPTN loan?",
+        soalan_alternatif: "Siapa yang layak memohon PTPTN? Apakah kelayakan pinjaman? Who is eligible for PTPTN?",
+        kata_kunci: ["syarat ptptn", "syarat permohonan", "warganegara", "umur", "tawaran ipt", "sspn", "baki pengajian"],
+        jawapan_rasmi: "Antara syarat yang dinyatakan dalam panduan ialah warganegara Malaysia, berumur tidak melebihi 45 tahun ketika memohon, mendapat tawaran pengajian, mengikuti kursus yang diluluskan PTPTN, mempunyai akaun Simpan SSPN yang memenuhi syarat dan baki pengajian sekurang-kurangnya satu semester. Syarat semasa tertakluk kepada ketetapan PTPTN.",
+        jawapan_en: "Requirements include: Malaysian citizen, aged not more than 45 at the time of application, holding a valid admission offer, pursuing a PTPTN-approved course, having an active Simpan SSPN account, and having at least 1 semester of study remaining.",
+        pautan: [
+            { label: "Syarat Pinjaman Pendidikan PTPTN", url: "https://www.ptptn.gov.my/pinjaman-pendidikan/" }
+        ]
+    },
+    {
+        id: "ptptn_06",
+        section: "Permohonan & Pinjaman PTPTN",
+        featuredFaq: true,
+        faqLabel: { ms: "Cara Memohon Pinjaman PTPTN & SSPN Prime", en: "How to Apply for PTPTN & Open SSPN Prime" },
+        soalan_utama: "Bagaimanakah cara memohon pinjaman PTPTN?",
+        soalan_en: "How do I apply for a PTPTN education loan online?",
+        soalan_alternatif: "Di mana nak mohon PTPTN? Bagaimana proses permohonan? How to apply PTPTN online?",
+        kata_kunci: ["cara mohon", "permohonan online", "pinjaman pendidikan", "myptptn", "proses permohonan"],
+        jawapan_rasmi: "Permohonan pinjaman pendidikan dibuat secara dalam talian melalui **myPTPTN**. Pelajar perlu melengkapkan maklumat permohonan, membuka akaun **SSPN Prime** (minimum RM20) dan akaun bank panel **RHB Islamic**, mengemukakan dokumen yang diperlukan dan menghantar permohonan mengikut jadual yang ditetapkan.",
+        jawapan_en: "PTPTN loan applications are submitted online via **myPTPTN**. Students must complete their profile, have an **SSPN Prime** account (minimum RM20) and **RHB Islamic** panel bank account, and submit the application within the scheduled window.",
+        pautan: [
+            { label: "Panduan Permohonan PTPTN JHEP", url: "https://sites.google.com/unimap.edu.my/unitpembiayaanjhep/ptptn/permohonan" },
+            { label: "Log Masuk Web myPTPTN", url: "https://myptptn.ptptn.gov.my/ptptn/app/landing" }
+        ]
+    },
+    {
+        id: "ptptn_07",
+        section: "Permohonan & Pinjaman PTPTN",
+        soalan_utama: "Bagaimanakah cara mendaftar akaun myPTPTN?",
+        soalan_en: "How do I register and log in to a myPTPTN account?",
+        soalan_alternatif: "Bagaimana nak daftar myPTPTN? Di mana nak log masuk? How to register myPTPTN?",
+        kata_kunci: ["daftar myptptn", "akaun myptptn", "log masuk", "portal ptptn"],
+        jawapan_rasmi: "Layari portal myPTPTN dan ikuti arahan pendaftaran pengguna baharu atau log masuk untuk memulakan urusan permohonan pinjaman.",
+        jawapan_en: "Visit the official myPTPTN portal and follow the new user registration steps (including eKYC identity verification) or log in to start your loan application.",
+        pautan: [
+            { label: "Portal Rasmi myPTPTN", url: "https://myptptn.ptptn.gov.my/ptptn/app/landing" }
+        ]
+    },
+    {
+        id: "ptptn_08",
+        section: "Permohonan & Pinjaman PTPTN",
+        soalan_utama: "Adakah pelajar perlu membeli nombor PIN PTPTN?",
+        soalan_en: "Do students need to buy a PTPTN BSN PIN number?",
+        soalan_alternatif: "Perlu beli PIN BSN ke? Berapa harga PIN? Do I need BSN PIN RM5?",
+        kata_kunci: ["pin bsn", "nombor pin", "rm5", "pembelian pin", "beli pin"],
+        jawapan_rasmi: "Rujuk arahan semasa dalam myPTPTN. Panduan terdahulu menyatakan pembelian PIN BSN berharga RM5, tetapi kaedah dan keperluan PIN hendaklah disahkan berdasarkan proses permohonan semasa di dalam portal myPTPTN.",
+        jawapan_en: "Refer to the current instructions inside myPTPTN. Previous guidelines stated a RM5 BSN PIN purchase, so verify the current registration requirement directly inside the myPTPTN portal.",
+        pautan: [
+            { label: "Panduan Permohonan PTPTN UniMAP", url: "https://sites.google.com/unimap.edu.my/unitpembiayaanjhep/ptptn/permohonan" }
+        ]
+    },
+    {
+        id: "ptptn_09",
+        section: "Permohonan & Pinjaman PTPTN",
+        soalan_utama: "Bagaimanakah cara membuka akaun SSPN Prime?",
+        soalan_en: "How do I open a Simpan SSPN Prime account and what is the minimum deposit?",
+        soalan_alternatif: "Bagaimana nak buka SSPN? Berapa simpanan minimum SSPN Prime? How to open SSPN account?",
+        kata_kunci: ["sspn prime", "buka akaun", "simpanan minimum", "rm20", "akaun sspn"],
+        jawapan_rasmi: "Akaun SSPN Prime boleh dibuka melalui aplikasi atau Web myPTPTN mengikut panduan yang diberikan. Amaun simpanan minimum yang dinyatakan ialah **RM20**. Selesaikan pembayaran dan semak nombor akaun selepas proses pembukaan.",
+        jawapan_en: "An SSPN Prime account can be opened directly via the myPTPTN mobile app or web portal. The minimum deposit required is **RM20**. Complete the payment and check your SSPN account number after activation.",
+        pautan: [
+            { label: "Panduan Buka Akaun SSPN (JHEP)", url: "https://sites.google.com/unimap.edu.my/unitpembiayaanjhep/ptptn/akaun-sspn" }
+        ]
+    },
+    {
+        id: "ptptn_10",
+        section: "Permohonan & Pinjaman PTPTN",
+        soalan_utama: "Berapakah umur maksimum untuk memohon PTPTN?",
+        soalan_en: "What is the maximum age limit to apply for a PTPTN loan?",
+        soalan_alternatif: "Umur 30 atau 40 tahun boleh mohon PTPTN? Maximum age limit PTPTN?",
+        kata_kunci: ["umur maksimum", "had umur", "syarat umur", "45 tahun"],
+        jawapan_rasmi: "Berdasarkan panduan yang diberikan, pemohon mestilah berumur **tidak melebihi 45 tahun** pada tarikh permohonan. Sila semak syarat terkini PTPTN sebelum memohon.",
+        jawapan_en: "Applicants must be **not older than 45 years of age** on the date of application.",
+        pautan: [
+            { label: "Syarat Pinjaman Pendidikan PTPTN", url: "https://www.ptptn.gov.my/pinjaman-pendidikan/" }
+        ]
+    },
+    {
+        id: "ptptn_11",
+        section: "Permohonan & Pinjaman PTPTN",
+        soalan_utama: "Bilakah keputusan permohonan PTPTN boleh disemak?",
+        soalan_en: "When can I check my PTPTN loan application result?",
+        soalan_alternatif: "Berapa lama keputusan PTPTN keluar? Bila boleh semak kelulusan? How many days for PTPTN approval?",
+        kata_kunci: ["keputusan ptptn", "semakan kelulusan", "5 hari bekerja", "lima hari bekerja", "status permohonan", "bila lulus"],
+        jawapan_rasmi: "Berdasarkan panduan Unit Pembiayaan, semakan boleh dibuat selepas tempoh pemprosesan yang dinyatakan, iaitu **sekitar lima (5) hari bekerja selepas tarikh tutup permohonan**. Tarikh paparan sebenar tertakluk kepada jadual dan makluman PTPTN dalam myPTPTN.",
+        jawapan_en: "According to Unit Pembiayaan guidelines, results can be checked approximately **five (5) working days after the application closing date** via the myPTPTN portal.",
+        pautan: [
+            { label: "Panduan Terima Tawaran PTPTN (JHEP)", url: "https://sites.google.com/unimap.edu.my/unitpembiayaanjhep/ptptn/terima-tawaran" },
+            { label: "Portal myPTPTN", url: "https://myptptn.ptptn.gov.my/ptptn/app/landing" }
+        ]
+    },
+    {
+        id: "ptptn_12",
+        section: "Permohonan & Pinjaman PTPTN",
+        soalan_utama: "Bagaimanakah cara menerima tawaran pinjaman PTPTN?",
+        soalan_en: "What should I do after my PTPTN loan is approved to accept the offer?",
+        soalan_alternatif: "Saya lulus PTPTN, apa perlu dibuat? Bagaimana nak terima tawaran? How to accept PTPTN offer?",
+        kata_kunci: ["tawaran pinjaman", "lulus ptptn", "surat tawaran", "dokumen perjanjian", "terima tawaran"],
+        jawapan_rasmi: "Setelah permohonan diluluskan, pelajar perlu menyemak surat tawaran dan melengkapkan dokumen perjanjian mengikut arahan PTPTN. Dokumen boleh dihantar secara dalam talian melalui Web myPTPTN atau melalui kaedah lain yang dibenarkan.",
+        jawapan_en: "Once your application is approved, review your offer letter and complete the loan agreement documents as instructed by PTPTN via the myPTPTN web portal.",
+        pautan: [
+            { label: "Panduan Terima Tawaran PTPTN", url: "https://sites.google.com/unimap.edu.my/unitpembiayaanjhep/ptptn/terima-tawaran" },
+            { label: "Portal myPTPTN", url: "https://myptptn.ptptn.gov.my/ptptn/app/landing" }
+        ]
+    },
+    {
+        id: "ptptn_13",
+        section: "Permohonan & Pinjaman PTPTN",
+        soalan_utama: "Bagaimanakah cara menghantar dokumen tawaran PTPTN secara dalam talian?",
+        soalan_en: "How do I submit my PTPTN loan agreement documents online?",
+        soalan_alternatif: "Bagaimana nak hantar perjanjian PTPTN online? Submit PTPTN agreement online",
+        kata_kunci: ["hantar perjanjian", "dokumen tawaran", "serahan online", "web myptptn", "perjanjian online"],
+        jawapan_rasmi: "Log masuk ke **Web myPTPTN**, pilih permohonan pinjaman dan ikut arahan penghantaran dokumen perjanjian secara dalam talian. Pastikan semua maklumat dan dokumen lengkap sebelum penghantaran.",
+        jawapan_en: "Log in to **myPTPTN Web**, select your loan application, and follow the online agreement submission instructions.",
+        pautan: [
+            { label: "Panduan Terima Tawaran PTPTN", url: "https://sites.google.com/unimap.edu.my/unitpembiayaanjhep/ptptn/terima-tawaran" },
+            { label: "Log Masuk myPTPTN", url: "https://myptptn.ptptn.gov.my/ptptn/app/landing" }
+        ]
+    },
+    {
+        id: "ptptn_14",
+        section: "Permohonan & Pinjaman PTPTN",
+        featuredFaq: true,
+        faqLabel: { ms: "Tandatangan Digital PTPTN (RM25 & Tempoh 24 Jam)", en: "PTPTN Digital Signature (RM25 & 24-Hr Processing)" },
+        soalan_utama: "Apakah itu tandatangan digital PTPTN dan berapakah bayarannya?",
+        soalan_en: "What is the PTPTN Digital Signature, how much does it cost (RM25), and how long does it take?",
+        soalan_alternatif: "Bagaimana nak tandatangan perjanjian PTPTN? Perlu bayar berapa untuk perjanjian PTPTN online? Selepas bayar RM25, bila perjanjian siap?",
+        kata_kunci: ["tandatangan digital", "perjanjian online", "mydigital id", "bayaran perjanjian", "rm25", "setem lhdn", "24 jam bekerja", "tempoh tandatangan"],
+        jawapan_rasmi: "- **Maksud Tandatangan Digital**: Proses pengesahan dokumen perjanjian PTPTN secara elektronik di dalam Web myPTPTN.\n- **Bayaran (RM25)**: Bayaran serahan perjanjian dalam talian ialah **RM25** bagi urusan berkaitan penyeteman (setem hasil LHDN) dan tandatangan digital. Sahkan amaun semasa yang dipaparkan dalam myPTPTN sebelum membuat pembayaran.\n- **Tempoh Siap (24 Jam Bekerja)**: Proses tandatangan digital mengambil masa sekitar **24 jam waktu bekerja** (tidak termasuk Sabtu, Ahad dan cuti umum).",
+        jawapan_en: "- **What It Is**: Electronic execution of your PTPTN loan agreement via myPTPTN Web.\n- **Fee (RM25)**: Online agreement submission costs **RM25**, covering LHDN stamp duty and digital signing.\n- **Processing Time (24 Working Hours)**: Takes approximately **24 working hours** (excluding Saturdays, Sundays, and public holidays). Check status in myPTPTN.",
+        pautan: [
+            { label: "Panduan Terima Tawaran & Tandatangan Digital", url: "https://sites.google.com/unimap.edu.my/unitpembiayaanjhep/ptptn/terima-tawaran" },
+            { label: "Web myPTPTN", url: "https://myptptn.ptptn.gov.my/ptptn/app/landing" }
+        ]
+    },
+    {
+        id: "ptptn_15",
+        section: "Permohonan & Pinjaman PTPTN",
+        soalan_utama: "Berapakah bayaran bagi tandatangan digital PTPTN?",
+        soalan_en: "How much is the fee for PTPTN online digital signature and stamping?",
+        soalan_alternatif: "Perlu bayar berapa untuk perjanjian PTPTN online? How much to pay for PTPTN digital signature?",
+        kata_kunci: ["bayaran perjanjian", "rm25", "setem lhdn", "bayaran tandatangan digital"],
+        jawapan_rasmi: "Berdasarkan panduan yang diberikan, bayaran serahan perjanjian dalam talian ialah **RM25** bagi urusan berkaitan penyeteman dan tandatangan digital. Sahkan amaun semasa yang dipaparkan dalam myPTPTN sebelum membuat pembayaran.",
+        jawapan_en: "The online agreement submission fee is **RM25** for stamp duty and digital signature processing. Confirm the exact amount shown in myPTPTN prior to payment.",
+        pautan: [
+            { label: "Panduan Terima Tawaran PTPTN", url: "https://sites.google.com/unimap.edu.my/unitpembiayaanjhep/ptptn/terima-tawaran" }
+        ]
+    },
+    {
+        id: "ptptn_16",
+        section: "Permohonan & Pinjaman PTPTN",
+        soalan_utama: "Berapa lama proses tandatangan digital mengambil masa?",
+        soalan_en: "How long does the PTPTN digital signature process take after paying RM25?",
+        soalan_alternatif: "Selepas bayar RM25, bila perjanjian siap? How long after paying RM25?",
+        kata_kunci: ["tempoh tandatangan", "24 jam bekerja", "status perjanjian", "selepas bayar rm25"],
+        jawapan_rasmi: "Panduan yang diberikan menyatakan proses tandatangan digital mengambil masa **sekitar 24 jam waktu bekerja**, tidak termasuk Sabtu, Ahad dan cuti umum. Semak status terkini dalam myPTPTN.",
+        jawapan_en: "The digital signature process takes approximately **24 working hours** (excluding weekends and public holidays). Check your updated agreement status in myPTPTN.",
+        pautan: [
+            { label: "Panduan Terima Tawaran PTPTN", url: "https://sites.google.com/unimap.edu.my/unitpembiayaanjhep/ptptn/terima-tawaran" }
+        ]
+    },
+    {
+        id: "ptptn_17",
+        section: "Permohonan & Pinjaman PTPTN",
+        featuredFaq: true,
+        faqLabel: { ms: "Tempoh Duit PTPTN Masuk Akaun (21 Hari Bekerja)", en: "PTPTN Loan Disbursement Timeline (21 Working Days)" },
+        soalan_utama: "Berapa lama wang pinjaman PTPTN dikreditkan?",
+        soalan_en: "How long does it take for PTPTN loan money to be credited into my bank account?",
+        soalan_alternatif: "Bila duit PTPTN masuk akaun? Berapa hari selepas perjanjian siap? When will PTPTN money be credited?",
+        kata_kunci: ["duit ptptn", "tarikh kredit", "wang pinjaman", "21 hari bekerja", "bila duit masuk", "dikreditkan"],
+        jawapan_rasmi: "Berdasarkan panduan yang diberikan, pengkreditan pinjaman dijangka mengambil masa **sehingga 21 hari bekerja selepas proses perjanjian lengkap**, tertakluk kepada pengesahan IPT dan pemprosesan PTPTN.",
+        jawapan_en: "Loan disbursement is expected within **21 working days after the agreement process is completed**, subject to university (IPT) confirmation and PTPTN processing.",
+        pautan: [
+            { label: "Panduan Terima Tawaran PTPTN", url: "https://sites.google.com/unimap.edu.my/unitpembiayaanjhep/ptptn/terima-tawaran" },
+            { label: "Web myPTPTN", url: "https://myptptn.ptptn.gov.my/ptptn/app/landing" }
+        ]
+    },
 
-📞 **Talian Terus Jabatan Bendahari UniMAP**:
-- **Unit Kewangan Pelajar**: **04-941 4033**
-- **Talian Alternatif**: **04-941 4021 / 04-941 4121**`
-        },
-        quickActions: [
-            { label: { en: "Document Verification (OSI e-Funding)", ms: "Pengesahan Dokumen (OSI e-Funding)" }, query: { en: "How do I get a Student Confirmation Letter (ETS/KTMB/Scholarship) or verify parent income documents via OSI e-Funding?", ms: "Bagaimana cara mendapatkan Surat Pengesahan Pelajar (ETS/KTMB/Penajaan) atau pengesahan dokumen pendapatan melalui OSI e-Funding?" } }
+    // --- BAHAGIAN 2: WANG PENDAHULUAN PINJAMAN (WPP RM1,500) ---
+    {
+        id: "wpp_01",
+        section: "Wang Pendahuluan Pinjaman (WPP)",
+        featuredFaq: true,
+        faqLabel: { ms: "Wang Pendahuluan Pinjaman (WPP RM1,500)", en: "PTPTN Advance Loan (WPP RM1,500)" },
+        soalan_utama: "Apakah itu Wang Pendahuluan Pinjaman (WPP) dan syarat kelayakannya?",
+        soalan_en: "What is Wang Pendahuluan Pinjaman (WPP RM1,500) and who is eligible?",
+        soalan_alternatif: "Apa maksud WPP PTPTN? Berapa jumlah WPP? Siapa layak dapat WPP? Adakah penerima STR layak?",
+        kata_kunci: ["wpp", "wang pendahuluan", "rm1500", "rm1,500", "bantuan sebelum daftar", "syarat wpp", "str", "hutang wpp"],
+        jawapan_rasmi: "- **Apakah WPP**: Wang pendahuluan sebanyak **RM1,500** yang diberikan kepada pelajar yang layak sebelum mendaftar di IPT. WPP merupakan sebahagian daripada pinjaman PTPTN dan **bukan bantuan percuma**.\n- **Syarat Kelayakan WPP**: Warganegara Malaysia, memberikan persetujuan menerima WPP semasa memohon UPU/IPT, pelajar atau ibu bapa/penjaga merupakan **penerima STR**, mendapat tawaran Diploma atau Ijazah Sarjana Muda sepenuh masa di IPTA/politeknik, serta tidak mempunyai hutang WPP terdahulu.",
+        jawapan_en: "- **What is WPP**: An advance loan of **RM1,500** provided to eligible students prior to university registration. WPP is part of the PTPTN loan and **not a free grant**.\n- **Eligibility**: Malaysian citizen, consented to receive WPP during UPU/IPT admission application, student or parent/guardian is an **STR recipient**, offered full-time Diploma or Bachelor's Degree at an IPTA/Polytechnic, and has no prior WPP debt.",
+        pautan: [
+            { label: "Maklumat Rasmi WPP PTPTN", url: "https://www.ptptn.gov.my/wang-pendahuluan-pinjaman-wpp/" }
         ]
     },
     {
-        id: "surat_pengesahan_osi_efunding",
-        refCode: "PTN-SURAT-01",
-        category: "Surat Penajaan/Pengesahan Dokumen",
-        faqTitle: {
-            ms: "Surat Pengesahan Pelajar (ETS/KTMB) & OSI",
-            en: "Student Confirmation Letters (ETS) & OSI"
-        },
-        keywords: ["surat", "pengesahan", "dokumen", "ets", "ktmb", "ktm", "diskaun", "pengangkutan", "pendapatan", "ibu bapa", "osi", "e-funding", "efunding", "aktif belajar", "sabah", "collect document", "delete", "termohon"],
-        questions: {
-            en: "How do I get a Student Confirmation Letter (ETS/KTMB/Scholarship) or verify parent income documents via OSI e-Funding?",
-            ms: "Bagaimana cara mendapatkan Surat Pengesahan Pelajar (ETS/KTMB/Penajaan) atau pengesahan dokumen pendapatan melalui OSI e-Funding?"
-        },
-        answer: {
-            en: `###Document Verification (OSI e-Funding) & Confirmation Letters
-1. **Standard Study Confirmation Letter (e.g., for ETS / KTMB Student Discount)**:
-   - You can generate the standard letter directly in OSI:
-   - **Path**: \`OSI > Admission > Confirmation Studies Letter > English / Malay\`
-2. **Custom Document Endorsement (Parent Income Verification, KTMB Lampiran 3 with Graduation Month/Year, State Loans, JoC)**:
-   - ✅ Submit your verification request online via **OSI e-Funding**.
-   - ✅ **Unit Pembiayaan** will review your uploaded documents and update the status in the system.
-   - ✅ **Only come to the counter when the status shows ready** (*refer to the "Collect Document" date in OSI e-Funding*).
-   - ⭐ **Workflow**: \`APPLY ONLINE → CHECK STATUS → COLLECT WHEN READY\` (No need to rush to the counter before it is ready!).
-3. **Accidentally Submitted Wrong Application in OSI e-Funding?**:
-   - Do not worry—**Unit Pembiayaan will cancel/delete** duplicate or accidental entries upon review.`,
-            ms: `###Pengesahan Dokumen (OSI e-Funding) & Surat Pengesahan Pelajar
-1. **Muat Turun Surat Pengesahan Belajar Standard (Contoh: Tambang Pelajar ETS / KTMB)**:
-   - Boleh dijana terus melalui sistem OSI:
-   - **Laluan**: \`OSI > Admission > Confirmation Studies Letter > English / Malay\`
-2. **Pengesahan Dokumen Rasmi (Pengesahan Pendapatan Ibu Bapa, Borang Lampiran 3 KTMB, Tabung Pendidikan Negeri, JoC)**:
-   - ✅ Permohonan pengesahan dokumen dibuat secara dalam talian melalui **OSI e-Funding**.
-   - ✅ Pihak **Unit Pembiayaan** akan membuat semakan dan mengemas kini status permohonan.
-   - ✅ Pelajar **hanya perlu hadir ke kaunter apabila dokumen telah siap** (*rujuk tarikh pengambilan "Collect Document" yang ditetapkan dalam sistem*).
-   - ⭐ **Aliran Mudah**: \`MOHON SECARA ONLINE → SEMAK STATUS → HADIR APABILA DOKUMEN SIAP\` (Tidak perlu terburu-buru hadir ke kaunter!).
-3. **Termohon / Silap Isi Dalam OSI e-Funding?**:
-   - Pihak Unit Pembiayaan akan membatalkan permohonan tersebut dalam sistem.`
-        },
-        quickActions: [
-            { label: { en: "MySISWA Job on Campus (JoC)", ms: "Kerja Sambilan Kampus (JoC)" }, query: { en: "How do I apply for MySISWA Job on Campus (JoC), or what are the campus bicycle rules & Unit Pembiayaan contacts?", ms: "Bagaimana cara memohon kerja sambilan MySISWA Job on Campus (JoC), peraturan basikal kampus & talian Unit Pembiayaan?" } }
+        id: "wpp_02",
+        section: "Wang Pendahuluan Pinjaman (WPP)",
+        soalan_utama: "Bagaimanakah cara memohon dan menyemak status WPP?",
+        soalan_en: "How do I apply for WPP and check my WPP approval status?",
+        soalan_alternatif: "Perlu isi borang WPP? Bagaimana nak dapat WPP? Bagaimana nak semak WPP? Duit WPP lulus atau tidak?",
+        kata_kunci: ["permohonan wpp", "setuju terima", "upu", "semakan wpp", "status wpp", "sms"],
+        jawapan_rasmi: "- **Cara Memohon WPP**: Berdasarkan pengesahan persetujuan menerima WPP semasa permohonan kemasukan ke IPT melalui Portal UPU atau saluran kemasukan IPT berkaitan.\n- **Semakan Status WPP**: Boleh dibuat melalui portal rasmi PTPTN. Makluman juga dihantar melalui SMS atau e-mel berdasarkan maklumat hubungan yang didaftarkan.",
+        jawapan_en: "- **How to Apply**: Automatically processed when you tick 'Agree to accept WPP' during your UPU or IPT admission application.\n- **Status Check**: Check via the official PTPTN portal, or via SMS/email notifications sent to your registered contact.",
+        pautan: [
+            { label: "Semakan & Maklumat WPP PTPTN", url: "https://www.ptptn.gov.my/wang-pendahuluan-pinjaman-wpp/" }
         ]
     },
     {
-        id: "kebajikan_khairat_laptop_etabung",
-        refCode: "PTN-KEBAJIKAN-01",
-        category: "Lain-lain",
-        faqTitle: {
-            ms: "Khairat Kematian, Pinjaman Laptop & e-Tabung",
-            en: "Bereavement Aid, Laptop Loan & e-Tabung"
-        },
-        keywords: ["khairat", "kematian", "ayah", "ibu", "meninggal", "laptop", "komputer", "peranti", "pinjaman laptop", "e-tabung", "etabung", "tabung amanah khas", "kebajikan", "04-941 4430"],
-        questions: {
-            en: "How do I apply for Bereavement Aid (Khairat Kematian), Student Laptop Loan, or e-Tabung Zakat?",
-            ms: "Bagaimana cara memohon Sumbangan Khairat Kematian, Pinjaman Laptop Pelajar, atau sistem e-Tabung Zakat?"
-        },
-        answer: {
-            en: `###Student Welfare Aid (Khairat Kematian, Laptop Loan & e-Tabung)
-1. **Bereavement Aid (Sumbangan Khairat Kematian Ibu/Bapa Kandung)**:
-   - Complete the application inside the **OSI system** and submit/email the form & supporting documents to the Welfare Unit at **kebajikan@unimap.edu.my**.
-2. **Student Laptop Loan / Welfare Assistance / e-Tabung (Tabung Sumbangan Zakat & Tabung Amanah Khas)**:
-   - For opening dates, eligibility, and application procedures under the Student Welfare Unit, please contact **Unit Kebajikan, JHEP UniMAP** directly:
-   - 📞 **Telephone**: **04-941 4430**
-   - ✉️ **Email**: **kebajikan@unimap.edu.my**`,
-            ms: `###Bantuan Kebajikan Pelajar (Khairat Kematian, Pinjaman Laptop & e-Tabung)
-1. **Permohonan Sumbangan Khairat Kematian (Ayah/Ibu Kandung)**:
-   - Sila isi permohonan di dalam sistem **OSI** dan hantar borang / e-melkan dokumen lengkap kepada Unit Kebajikan melalui **kebajikan@unimap.edu.my**.
-2. **Permohonan Pinjaman Laptop / Bantuan Kebajikan / Sistem e-Tabung (Tabung Sumbangan Zakat & Tabung Amanah Khas)**:
-   - Untuk pertanyaan lanjut mengenai tarikh pembukaan dan prosedur permohonan bantuan kebajikan pelajar, sila hubungi **Unit Kebajikan, JHEP UniMAP**:
-   - 📞 **Telefon**: **04-941 4430**
-   - ✉️ **E-mel**: **kebajikan@unimap.edu.my**`
-        },
-        quickActions: []
+        id: "wpp_03",
+        section: "Wang Pendahuluan Pinjaman (WPP)",
+        soalan_utama: "Di manakah WPP boleh ditunaikan dan berapa lama tempoh sah laku?",
+        soalan_en: "Where can I cash out my WPP warrant and when does it expire?",
+        soalan_alternatif: "Bank mana boleh tebus WPP? Apa dokumen perlu dibawa? WPP boleh ditebus sampai bila? Adakah WPP ada tarikh luput?",
+        kata_kunci: ["tebus wpp", "ditunaikan", "bank islam", "surat tawaran wpp", "tempoh wpp", "tarikh luput", "dua bulan"],
+        jawapan_rasmi: "- **Tempat Menunaikan WPP**: Di mana-mana kaunter **Bank Islam** dengan membawa **Surat Tawaran WPP** yang dicetak daripada portal rasmi PTPTN beserta **MyKad pelajar**. (*Wakil tidak dibenarkan menunaikan WPP bagi pihak pelajar*).\n- **Tempoh Sah Laku**: Penunaian perlu dibuat dalam tempoh **dua (2) bulan** daripada tarikh surat tawaran WPP.",
+        jawapan_en: "- **Where to Cash Out**: At any **Bank Islam** counter by bringing your printed **WPP Offer Letter** and **student MyKad** (*representatives are not allowed*).\n- **Validity Period**: Must be cashed within **two (2) months** from the date of the WPP offer letter.",
+        pautan: [
+            { label: "Panduan Penunaian WPP PTPTN", url: "https://www.ptptn.gov.my/wang-pendahuluan-pinjaman-wpp/" }
+        ]
     },
     {
-        id: "joc_campus_bicycle_general",
-        refCode: "PTN-UMUM-01",
-        category: "Lain-lain",
-        faqTitle: {
-            ms: "Kerja Sambilan (JoC) & Talian Unit Pembiayaan",
-            en: "Job on Campus (JoC) & Unit Pembiayaan Contacts"
-        },
-        keywords: ["joc", "job on campus", "kerja", "bekerja di jabatan", "part time", "sambilan", "mysiswa", "cgee", "basikal", "bicycle", "riadah", "unit pembiayaan", "04-941 4431"],
-        questions: {
-            en: "How do I apply for MySISWA Job on Campus (JoC), or what are the campus bicycle rules & Unit Pembiayaan contacts?",
-            ms: "Bagaimana cara memohon kerja sambilan MySISWA Job on Campus (JoC), peraturan basikal kampus & talian Unit Pembiayaan?"
-        },
-        answer: {
-            en: `###MySISWA Job on Campus (JoC), Campus Rules & Unit Pembiayaan Contacts
-1. **MySISWA Job on Campus (JoC) — Part-Time Campus Work**:
-   - Managed by the **Centre for Graduate Employability & Entrepreneurship (CGEE), UniMAP**.
-   - 📍 **Location**: Level 2, Pusat Pengajian Siswazah, Kampus Alam UniMAP, Pauh Putra, 02600 Arau, Perlis.
-   - 📞 **Phone**: **04-941 4396**
-2. **Riding Bicycles on Campus**:
-   - Allowed for commuting to class and recreation, subject to campus traffic rules: ride carefully on designated paths, obey safety signs, yield to pedestrians, equip lights/reflectors at night, and park only at designated bicycle racks.
-3. **Official Unit Pembiayaan JHEP Channels**:
-   - 🔗 **Official Inquiry Portal**: [https://sites.google.com/unimap.edu.my/unitpembiayaanjhep/pertanyaan](https://sites.google.com/unimap.edu.my/unitpembiayaanjhep/pertanyaan)
-   - 📞 **Unit Pembiayaan Hotline**: **04-941 4431**`,
-            ms: `###MySISWA Job on Campus (JoC), Peraturan Basikal & Talian Unit Pembiayaan
-1. **Program MySISWA Job on Campus (JoC) — Bekerja Sambilan di Jabatan**:
-   - Diuruskan oleh **Pusat Kebolehpasaran Graduan & Keusahawanan (CGEE), UniMAP**.
-   - 📍 **Lokasi**: Aras 2, Pusat Pengajian Siswazah, Kampus Alam UniMAP, Pauh Putra, 02600 Arau, Perlis.
-   - 📞 **No. Telefon**: **04-941 4396**
-2. **Peraturan Menunggang Basikal di Dalam Kampus**:
-   - Pelajar dibenarkan menggunakan basikal untuk ke kelas dan beriadah dengan mematuhi peraturan: menunggang secara berhemah, patuhi papan tanda keselamatan, beri keutamaan kepada pejalan kaki, pasang lampu/pemantul cahaya pada waktu malam, dan letakkan di rak basikal yang disediakan.
-3. **Saluran Rasmi Unit Pembiayaan JHEP**:
-   - 🔗 **Portal Pertanyaan**: [https://sites.google.com/unimap.edu.my/unitpembiayaanjhep/pertanyaan](https://sites.google.com/unimap.edu.my/unitpembiayaanjhep/pertanyaan)
-   - 📞 **Talian Unit Pembiayaan**: **04-941 4431**`
-        },
-        quickActions: []
+        id: "wpp_04",
+        section: "Wang Pendahuluan Pinjaman (WPP)",
+        soalan_utama: "Adakah WPP perlu dibayar balik dan bagaimana jika pelajar tidak meneruskan pengajian?",
+        soalan_en: "Does WPP have to be repaid, and what happens if I do not register at the university?",
+        soalan_alternatif: "WPP percuma atau pinjaman? Bagaimana potongan WPP dibuat? Kalau tak jadi daftar universiti, perlu bayar WPP?",
+        kata_kunci: ["bayaran balik wpp", "potongan rm500", "wpp tidak daftar", "batal pengajian", "wpp percuma"],
+        jawapan_rasmi: "- **Potongan Bayaran Balik WPP**: WPP bukan bantuan percuma. Potongan sebanyak **RM500 setiap semester** (selama 3 semester) akan dibuat secara automatik daripada jumlah pinjaman PTPTN apabila pinjaman diluluskan.\n- **Jika Tidak Meneruskan Pengajian**: Jika pelajar tidak mendaftar atau berhenti daripada IPT selepas menunaikan WPP, pelajar dikehendaki membayar balik jumlah WPP tersebut mengikut tempoh dan syarat yang ditetapkan PTPTN.",
+        jawapan_en: "- **WPP Repayment Deduction**: WPP is not free aid. **RM500 per semester** is deducted automatically from your subsequent PTPTN loan disbursements.\n- **If You Do Not Enroll**: If you do not proceed with your studies after cashing WPP, you are required to repay the WPP amount according to PTPTN's terms.",
+        pautan: [
+            { label: "Maklumat WPP PTPTN", url: "https://www.ptptn.gov.my/wang-pendahuluan-pinjaman-wpp/" }
+        ]
+    },
+
+    // --- BAHAGIAN 3: BIASISWA ANAK eKASIH PTPTN (BAeK) ---
+    {
+        id: "baek_01",
+        section: "Biasiswa Anak eKasih (BAeK)",
+        featuredFaq: true,
+        faqLabel: { ms: "Biasiswa Anak eKasih PTPTN (BAeK)", en: "PTPTN eKasih Scholarship (BAeK)" },
+        soalan_utama: "Apakah itu Biasiswa Anak eKasih PTPTN (BAeK), syarat kelayakan dan cara memohonnya?",
+        soalan_en: "What is Biasiswa Anak eKasih PTPTN (BAeK), who is eligible, and how do I apply?",
+        soalan_alternatif: "Apa itu BAeK? Adakah pinjaman PTPTN ditukar kepada biasiswa? Siapa boleh dapat BAeK? Perlu mohon BAeK secara berasingan?",
+        kata_kunci: ["baek", "baek ptptn", "biasiswa anak ekasih", "ekasih", "syarat baek", "proses baek", "umur 25"],
+        jawapan_rasmi: "- **Apakah BAeK PTPTN**: Inisiatif yang menukarkan pembiayaan pinjaman PTPTN kepada bentuk **biasiswa** bagi pelajar yang memenuhi syarat kelayakan termasuk berdaftar dalam pangkalan data **eKasih**.\n- **Syarat Kelayakan**: Warganegara Malaysia, berumur tidak melebihi 25 tahun pada tarikh permohonan, mengikuti Diploma atau Ijazah Sarjana Muda sepenuh masa di IPTA yang diluluskan PTPTN, tersenarai dalam **eKasih**, telah diluluskan pinjaman PTPTN, dan mempunyai akaun Simpan SSPN aktif.\n- **Proses Permohonan**: Pelajar perlu memohon pinjaman PTPTN melalui myPTPTN terlebih dahulu. Jika memenuhi syarat, pelajar akan menerima tawaran BAeK melalui e-mel dan notifikasi myPTPTN untuk melengkapkan dokumen tawaran.",
+        jawapan_en: "- **What is BAeK PTPTN**: An initiative that converts a PTPTN loan into a **scholarship** for eligible students registered in the **eKasih** database.\n- **Eligibility**: Malaysian citizen, aged 25 or below, pursuing a full-time Diploma or Bachelor's Degree at an IPTA, listed in **eKasih**, approved for a PTPTN loan, and holding an active Simpan SSPN account.\n- **Application Process**: Apply for a normal PTPTN loan on myPTPTN first. Eligible students will receive a BAeK offer notification via email and myPTPTN.",
+        pautan: [
+            { label: "Portal Rasmi Biasiswa Anak eKasih (BAeK)", url: "https://www.ptptn.gov.my/biasiswa-anak-ekasih-ptptn/" }
+        ]
+    },
+
+    // --- BAHAGIAN 4: KOD PROGRAM, PENGELUARAN SEMESTER, POTONGAN YURAN & PERTUKARAN PROGRAM ---
+    {
+        id: "ptptn_18",
+        section: "Pengeluaran, Yuran & Pertukaran Program",
+        soalan_utama: "Bagaimanakah cara menyemak kod program UniMAP yang ditawarkan pinjaman PTPTN?",
+        soalan_en: "Where can I check the official list of PTPTN course codes for UniMAP programmes?",
+        soalan_alternatif: "Di mana nak tengok senarai kod kursus UniMAP? PTPTN ditolak sebab kursus tidak berdaftar",
+        kata_kunci: ["senarai kod program", "kod kursus unimap", "program ptptn", "kod program"],
+        jawapan_rasmi: "Rujuk senarai kod program UniMAP yang disediakan oleh Unit Pembiayaan JHEP. Pastikan nama program dan maklumat pengajian dipilih dengan tepat berdasarkan surat tawaran IPT.",
+        jawapan_en: "Refer to the official UniMAP PTPTN programme code list provided by Unit Pembiayaan JHEP. Ensure you select the exact programme name matching your admission offer letter.",
+        pautan: [
+            { label: "Senarai Kod Program PTPTN UniMAP", url: "https://sites.google.com/unimap.edu.my/unitpembiayaanjhep/ptptn/kod-program-ptptn" }
+        ]
+    },
+    {
+        id: "ptptn_19",
+        section: "Pengeluaran, Yuran & Pertukaran Program",
+        featuredFaq: true,
+        faqLabel: { ms: "Syarat Sambungan PTPTN (PNG >= 2.0) & Potongan Yuran", en: "PTPTN Semester Renewal (GPA >= 2.0) & Fee Deduction" },
+        soalan_utama: "Apakah syarat pengeluaran pinjaman PTPTN untuk semester seterusnya?",
+        soalan_en: "Why hasn't my PTPTN loan been disbursed this semester, and what is the minimum GPA requirement?",
+        soalan_alternatif: "Kenapa duit PTPTN semester ini tak masuk? Apakah syarat sambungan pinjaman? Berapa pointer PNG minimum PTPTN?",
+        kata_kunci: ["pengeluaran semester", "png", "pngk", "gpa", "2.0", "keputusan peperiksaan", "status pengajian", "semester ini tak masuk", "sambungan pinjaman"],
+        jawapan_rasmi: "Pengeluaran pinjaman bagi semester berikutnya tertakluk kepada pengesahan IPT (status aktif belajar) dan syarat akademik PTPTN, di mana pelajar perlu memperolehi keputusan peperiksaan **PNG / GPA tidak kurang daripada 2.00 bagi setiap semester**.",
+        jawapan_en: "Subsequent semester disbursements require university confirmation of active study status and meeting PTPTN's academic requirement of achieving a semester **GPA (PNG) of at least 2.00 every semester**.",
+        pautan: [
+            { label: "Syarat Pinjaman Pendidikan PTPTN", url: "https://www.ptptn.gov.my/pinjaman-pendidikan/" }
+        ]
+    },
+    {
+        id: "ptptn_20",
+        section: "Pengeluaran, Yuran & Pertukaran Program",
+        soalan_utama: "Adakah PTPTN membayar yuran pengajian terus kepada universiti?",
+        soalan_en: "Does PTPTN pay tuition fees directly to UniMAP or credit my RHB account?",
+        soalan_alternatif: "Kenapa duit PTPTN masuk akaun saya? Siapa urus potongan yuran? Duit PTPTN dah masuk tapi yuran OSI belum tolak?",
+        kata_kunci: ["yuran pengajian", "duit masuk akaun", "bendahari", "potongan yuran", "akaun rhb", "tunggakan yuran"],
+        jawapan_rasmi: "Wang pinjaman dikreditkan mengikut semester tertakluk kepada pengesahan IPT (Unit Pembiayaan, JHEP). Pihak PTPTN akan memberi arahan pembayaran kepada bank panel iaitu **RHB**. Pihak bank akan merujuk jumlah pembayaran yuran pengajian (termasuk tunggakan yuran atau tuntutan berkaitan) melalui **Jabatan Bendahari UniMAP**. Pihak Bendahari akan mengemaskini jumlah yang perlu dibayar ke akaun universiti dan **baki pinjaman tersebut akan dikreditkan ke akaun RHB pelajar** bagi setiap semester.",
+        jawapan_en: "PTPTN issues payment instructions to **RHB Bank** after JHEP confirms your status. RHB coordinates with **Jabatan Bendahari UniMAP** to deduct your semester tuition fees (and any arrears) to the university account, and the **remaining balance is credited into your RHB student account**.",
+        pautan: [
+            { label: "Pertanyaan Unit Pembiayaan UniMAP", url: "https://sites.google.com/unimap.edu.my/unitpembiayaanjhep/pertanyaan" }
+        ]
+    },
+    {
+        id: "ptptn_21",
+        section: "Pengeluaran, Yuran & Pertukaran Program",
+        soalan_utama: "Apakah sebab pinjaman PTPTN boleh diberhentikan?",
+        soalan_en: "Why would a PTPTN loan be terminated or cancelled?",
+        soalan_alternatif: "Kenapa PTPTN saya dihentikan? Apakah punca pinjaman dibatalkan?",
+        kata_kunci: ["pemberhentian pinjaman", "dihentikan", "gagal pengajian", "maklumat palsu", "muflis", "berhenti pengajian"],
+        jawapan_rasmi: "Antara sebab pinjaman PTPTN diberhentikan ialah gagal atau berhenti pengajian pada peringkat, jurusan atau IPT yang diluluskan, pembatalan pinjaman oleh pelajar (kerana menerima tajaan lain), pemalsuan maklumat permohonan atau peminjam diisytiharkan muflis.",
+        jawapan_en: "Reasons for termination include failing or withdrawing from the approved programme/university, voluntary cancellation by the student (e.g., upon receiving another scholarship), falsifying application details, or bankruptcy.",
+        pautan: [
+            { label: "Maklumat Pinjaman Pendidikan PTPTN", url: "https://www.ptptn.gov.my/pinjaman-pendidikan/" }
+        ]
+    },
+    {
+        id: "ptptn_22",
+        section: "Pengeluaran, Yuran & Pertukaran Program",
+        soalan_utama: "Apakah yang perlu dilakukan jika ingin menukar program pengajian selepas menerima PTPTN dan apakah dokumen rayuannya?",
+        soalan_en: "What should I do if I change my study programme after receiving PTPTN, and what documents are needed?",
+        soalan_alternatif: "Boleh tukar kursus selepas dapat PTPTN? Bagaimana nak mohon pertukaran program? Dokumen apa perlu untuk rayuan tukar kursus?",
+        kata_kunci: ["tukar kursus", "pertukaran program", "tukar program", "rayuan ptptn", "dokumen rayuan", "pengesahan fakulti"],
+        jawapan_rasmi: "- **Syarat Pertukaran Program**: Pelajar perlu mendapatkan persetujuan bertulis PTPTN sebelum menukar program atau kursus. Pertukaran yang menyebabkan pelajar kembali ke Semester 1 atau menambah tempoh pinjaman mungkin tidak dibenarkan.\n- **Dokumen Rayuan Pertukaran Program**:\n  1. Surat rasmi permohonan kepada PTPTN\n  2. Salinan surat tawaran program lama yang disahkan\n  3. Surat kelulusan pertukaran program baharu yang disahkan\n  4. Surat pengesahan fakulti tentang status pengulangan semester.",
+        jawapan_en: "- **Programme Change Rules**: Obtain written approval from PTPTN. Changes that reset you to Semester 1 or extend the loan duration may not be covered under the old loan.\n- **Required Appeal Documents**:\n  1. Official cover letter to PTPTN\n  2. Certified copy of old programme offer letter\n  3. Certified copy of new programme transfer approval letter\n  4. Faculty confirmation letter regarding semester repetition status.",
+        pautan: [
+            { label: "Panduan Tukar Program PTPTN (JHEP)", url: "https://sites.google.com/unimap.edu.my/unitpembiayaanjhep/ptptn/tukar-program" }
+        ]
+    },
+
+    // --- BAHAGIAN 5: BAYARAN BALIK & PENANGGUHAN BAYARAN BALIK PTPTN ---
+    {
+        id: "repay_01",
+        section: "Bayaran Balik & Penangguhan PTPTN",
+        soalan_utama: "Bilakah bayaran balik pinjaman PTPTN bermula?",
+        soalan_en: "When does PTPTN loan repayment start after graduation?",
+        soalan_alternatif: "Bila perlu mula bayar PTPTN? Perlu tunggu notis bayaran balik?",
+        kata_kunci: ["bayaran balik bermula", "12 bulan", "tamat pengajian", "notis bayaran balik", "mula bayar"],
+        jawapan_rasmi: "Berdasarkan panduan yang diberikan, bayaran balik bermula **selepas 12 bulan tamat tempoh pengeluaran pinjaman**. Peminjam tidak perlu menunggu notis bayaran balik untuk mula membuat persediaan pembayaran.",
+        jawapan_en: "Loan repayment begins **12 months after the completion of your loan disbursement period**. Borrowers do not need to wait for a notice to start preparing for repayment.",
+        pautan: [
+            { label: "Portal Bayaran Balik PTPTN", url: "https://www.ptptn.gov.my/bayaran-balik/" }
+        ]
+    },
+    {
+        id: "defer_01",
+        section: "Bayaran Balik & Penangguhan PTPTN",
+        featuredFaq: true,
+        faqLabel: { ms: "Penangguhan Bayaran Balik PTPTN (Sambung Belajar / Belum Bekerja)", en: "PTPTN Repayment Deferment (Further Study / Unemployed)" },
+        soalan_utama: "Siapakah yang layak memohon penangguhan bayaran balik pinjaman PTPTN dan apakah syarat umumnya?",
+        soalan_en: "Who is eligible to apply for PTPTN loan repayment deferment and what are the requirements?",
+        soalan_alternatif: "Siapa boleh mohon tangguh bayaran PTPTN? Saya sambung belajar atau belum dapat kerja, boleh tangguh PTPTN? Adakah kos upah dikenakan semasa tangguh?",
+        kata_kunci: ["penangguhan bayaran balik", "tangguh bayaran", "sambung belajar", "tidak bekerja", "menganggur", "pinjaman ujrah", "kos upah", "24 bulan"],
+        jawapan_rasmi: "- **Kategori Layak Memohon Penangguhan**:\n  1. Peminjam yang **melanjutkan pengajian sepenuh masa** (pada peringkat lebih tinggi, termasuk di luar negara atau kursus berkembar 2+1/2+2) tanpa mengambil pinjaman PTPTN baharu.\n  2. Peminjam yang **masih belum bekerja / menganggur** (maksimum penangguhan **24 bulan** sepanjang tempoh kelayakan; 6 bulan bagi setiap permohonan).\n- **Syarat Umum & Kos Upah**:\n  - Pinjaman mestilah telah ditukar kepada kaedah **Ujrah**.\n  - **Tiada kos upah** dikenakan sepanjang tempoh penangguhan yang diluluskan.\n  - Jika pernah dikenakan tindakan penguatkuasaan, kos guaman perlu dijelaskan terlebih dahulu.\n- **Cara Memohon**: Secara dalam talian melalui **myPTPTN** beserta dokumen sokongan lengkap. Keputusan dimaklumkan melalui e-mel.",
+        jawapan_en: "- **Who Can Defer Repayment**:\n  1. Borrowers **pursuing full-time further studies** (at a higher level, locally or overseas) without taking a new PTPTN loan.\n  2. Borrowers who are **unemployed** (up to a maximum of **24 months** total; granted in 6-month intervals per application).\n- **General Conditions & Ujrah**:\n  - Loan must be under the **Ujrah** scheme (**no Ujrah wage charges** are incurred during an approved deferment period).\n  - Apply online via **myPTPTN** with complete supporting documents.",
+        pautan: [
+            { label: "Panduan Penangguhan Bayaran Balik PTPTN", url: "https://www.ptptn.gov.my/bayaran-balik/" }
+        ]
+    },
+    {
+        id: "defer_02",
+        section: "Bayaran Balik & Penangguhan PTPTN",
+        soalan_utama: "Berapakah tempoh penangguhan bayaran balik mengikut peringkat pengajian dan apakah dokumen yang diperlukan?",
+        soalan_en: "What is the maximum PTPTN deferment duration by study level and what documents are required?",
+        soalan_alternatif: "Berapa tahun boleh tangguh PTPTN untuk diploma, ijazah, sarjana atau PhD? Dokumen apa perlu kalau tak bekerja atau sambung belajar?",
+        kata_kunci: ["tempoh maksimum penangguhan", "dokumen tidak bekerja", "penyata kwsp", "akuan sumpah", "pesuruhjaya sumpah", "dokumen sambung belajar", "enam bulan"],
+        jawapan_rasmi: "- **Tempoh Penangguhan Mengikut Peringkat Pengajian** (minimum baki pengajian 6 bulan):\n  - Foundation / Profesional / Sijil / Diploma Lanjutan: **2 tahun**\n  - Diploma: **3 tahun**\n  - Ijazah Sarjana Muda: **4 tahun**\n  - Master: **2 tahun**\n  - PhD: **2 tahun**\n- **Dokumen Jika Menyambung Pengajian**: Salinan surat tawaran pengajian terkini DAN surat pengesahan IPT mengenai jangkaan tarikh tamat pengajian (jika tiada dalam surat tawaran).\n- **Dokumen Jika Tidak Bekerja**: Penyata KWSP terperinci terkini DAN Surat Akuan Sumpah terkini yang dibuat di hadapan Pesuruhjaya Sumpah.",
+        jawapan_en: "- **Maximum Deferment by Study Level**:\n  - Foundation / Professional / Certificate / Advanced Diploma: **2 years**\n  - Diploma: **3 years** | Bachelor's Degree: **4 years** | Master's: **2 years** | PhD: **2 years**\n- **Documents for Further Studies**: Latest admission offer letter AND university confirmation letter stating expected graduation date.\n- **Documents for Unemployment**: Detailed EPF (KWSP) statement AND a statutory declaration (Akuan Sumpah) signed before a Commissioner for Oaths.",
+        pautan: [
+            { label: "Portal Bayaran Balik PTPTN", url: "https://www.ptptn.gov.my/bayaran-balik/" }
+        ]
+    },
+    {
+        id: "defer_03",
+        section: "Bayaran Balik & Penangguhan PTPTN",
+        soalan_utama: "Adakah penangguhan bayaran balik menghalang nama daripada CCRIS, dan bilakah penangguhan boleh terbatal?",
+        soalan_en: "Does deferment remove my name from CCRIS, and under what circumstances can deferment be cancelled?",
+        soalan_alternatif: "Kalau dapat penangguhan, nama masih masuk CCRIS? Kenapa penangguhan PTPTN boleh dibatalkan? Saya gagal semester atau sambung peringkat sama boleh tangguh?",
+        kata_kunci: ["ccris", "rekod kredit", "pembatalan penangguhan", "menerima gaji", "elaun", "penstrukturan semula", "peringkat pengajian sama", "gagal pengajian"],
+        jawapan_rasmi: "- **Rekod CCRIS**: Penangguhan hanya mengecualikan peminjam daripada tindakan penguatkuasaan sepanjang tempoh kelulusan, tetapi **tidak menghalang** PTPTN daripada menyenaraikan nama peminjam dalam rekod CCRIS bagi tujuan pemantauan.\n- **Sebab Penangguhan Dibatalkan**: Jika peminjam didapati menerima gaji/elaun sepanjang tempoh penangguhan, memberi maklumat palsu, atau membuat rundingan penstrukturan semula bayaran balik.\n- **Kes Tidak Layak Tangguh**: Pengajian yang dilanjutkan akibat gagal/tangguh semester secara sengaja, atau menyambung pengajian pada **peringkat yang sama atau lebih rendah** daripada pinjaman terdahulu.",
+        jawapan_en: "- **CCRIS Record**: Deferment exempts you from enforcement actions during the approved period, but **does not prevent** CCRIS listing for credit monitoring.\n- **When Deferment is Cancelled**: If the borrower receives a salary/allowance during the deferment period, submits false info, or initiates loan restructuring.\n- **Ineligible Cases**: Repeating due to failed/deferred semesters, or pursuing a second qualification at the **same or lower academic level**.",
+        pautan: [
+            { label: "Portal Bayaran Balik PTPTN", url: "https://www.ptptn.gov.my/bayaran-balik/" }
+        ]
+    },
+
+    // --- BAHAGIAN 6: PENGECUALIAN BAYARAN BALIK IJAZAH KELAS PERTAMA (SYARAT BAHARU 2026) ---
+    {
+        id: "fc_01",
+        section: "Pengecualian Ijazah Kelas Pertama (2026)",
+        featuredFaq: true,
+        faqLabel: { ms: "Pengecualian Bayaran Balik Kelas Pertama (Syarat 2026 B40/M40)", en: "First Class Honours Loan Exemption (2026 B40/M40 Rules)" },
+        soalan_utama: "Apakah syarat pengecualian bayaran balik pinjaman PTPTN bagi graduan Kelas Pertama (termasuk syarat baharu mulai 2026)?",
+        soalan_en: "What are the eligibility requirements for PTPTN First Class Honours loan exemption starting 1 January 2026?",
+        soalan_alternatif: "Siapa yang layak mendapat pengecualian PTPTN? Adakah semua graduan Kelas Pertama layak? Syarat baharu Belanjawan 2026 B40 M40",
+        kata_kunci: ["pengecualian ptptn", "kelas pertama", "first class", "syarat baharu", "belanjawan 2026", "b40", "m40", "12 bulan", "konvokesyen", "hies", "dosm", "senat ipta"],
+        jawapan_rasmi: "- **Syarat Kelayakan Pengecualian Kelas Pertama (Mulai 1 Januari 2026)**:\n  1. Mengikuti pengajian **Ijazah Sarjana Muda secara sepenuh masa di IPTA** dan memperoleh **Kepujian Kelas Pertama** (disahkan oleh Senat IPTA).\n  2. Menamatkan pengajian dalam tempoh yang ditetapkan dalam dokumen tawaran pinjaman.\n  3. Tidak mempunyai pertindihan penajaan.\n  4. **Syarat Baharu 2026**: Dihadkan kepada graduan daripada keluarga berpendapatan rendah dan menengah (**B40 dan M40**) berdasarkan julat *Household Expenditure Survey (HIES)* DOSM (bagi bujang: pendapatan isi rumah ibu bapa/penjaga; bagi berkahwin: pendapatan peminjam & pasangan).\n  5. Memohon secara dalam talian melalui **Web myPTPTN dalam tempoh 12 bulan dari tarikh konvokesyen**.\n- *Nota*: Kelulusan tertakluk kepada kedudukan semasa kewangan Kerajaan.",
+        jawapan_en: "- **First Class Honours Exemption Criteria (Effective 1 January 2026)**:\n  1. Completed a **full-time Bachelor's Degree at an IPTA** with **First Class Honours** (conferred by the IPTA Senate).\n  2. Graduated within the timeframe stipulated in the loan offer document.\n  3. No overlapping sponsorship.\n  4. **New 2026 Rule**: Restricted to graduates from **B40 and M40** households based on DOSM HIES income thresholds (single: parents/guardian household income; married: borrower + spouse income).\n  5. Apply online via **myPTPTN Web within 12 months from your convocation date**.",
+        pautan: [
+            { label: "Portal Pengecualian Bayaran Balik PTPTN", url: "https://www.ptptn.gov.my/bayaran-balik/" }
+        ]
+    },
+    {
+        id: "fc_02",
+        section: "Pengecualian Ijazah Kelas Pertama (2026)",
+        soalan_utama: "Apakah dokumen yang diperlukan untuk memohon pengecualian bayaran balik Kelas Pertama dan siapakah yang boleh mengesahkannya?",
+        soalan_en: "What documents are needed for First Class PTPTN exemption and who can certify my scroll and transcript?",
+        soalan_alternatif: "Dokumen apa perlu disediakan? Perlu muat naik skrol dan transkrip? Dokumen pendapatan apa diterima? Siapakah yang boleh mengesahkan salinan ijazah dan transkrip?",
+        kata_kunci: ["dokumen pengecualian", "skrol", "transkrip", "surat kelas pertama", "dokumen pendapatan", "slip gaji", "pengesahan dokumen", "bahagian akademik", "cop pengesahan"],
+        jawapan_rasmi: "- **Dokumen Akademik Wajib**:\n  1. Salinan Skrol Ijazah Sarjana Muda Kepujian Kelas Pertama yang disahkan.\n  2. Salinan Transkrip Peperiksaan yang disahkan.\n  3. Surat Pengesahan Kelas Pertama (jika tidak dinyatakan pada skrol) & Surat Pengesahan Tamat Pengajian (jika tarikh tamat tiada pada skrol/transkrip).\n- **Siapa Boleh Sahkan Skrol & Transkrip?**:\n  - Mesti disahkan oleh **Pegawai Kumpulan Pengurusan & Profesional di Bahagian Akademik** di **IPTA asal tempat peminjam menamatkan pengajian ijazah tersebut** (tidak boleh disahkan oleh IPTA lain). Cop mesti mengandungi nama pegawai, jawatan dan jabatan.\n- **Dokumen Pendapatan (B40/M40)**:\n  - Slip gaji terkini / Penyata Cukai Taksiran / Penyata KWSP terkini / Penyata Pencen, atau Surat Akuan Sumpah Pengesahan Pendapatan / Surat Pengesahan Tidak Bekerja.",
+        jawapan_en: "- **Academic Documents**:\n  1. Certified copy of First Class Bachelor's Degree Scroll & Official Exam Transcript.\n  2. First Class confirmation letter & completion date letter (if not explicitly stated on the scroll/transcript).\n- **Who Can Certify?**:\n  - Must be certified by a **Management & Professional Officer at the Academic Division (Bahagian Akademik)** of the **exact IPTA that awarded the degree** (cannot be certified by another university).\n- **Income Documents (B40/M40)**:\n  - Latest payslips, EPF (KWSP) statement, tax statement, pension statement, or sworn income declaration (Akuan Sumpah).",
+        pautan: [
+            { label: "Panduan Dokumen Pengecualian PTPTN", url: "https://www.ptptn.gov.my/bayaran-balik/" }
+        ]
+    },
+    {
+        id: "fc_03",
+        section: "Pengecualian Ijazah Kelas Pertama (2026)",
+        soalan_utama: "Bagaimana jika masih ada baki pinjaman (Diploma / WPP / Lebih Bayar) selepas pengecualian Kelas Pertama?",
+        soalan_en: "Does First Class exemption cover Diploma loans or WPP, and can I get a refund if I already paid?",
+        soalan_alternatif: "Jika pinjaman Diploma dan Ijazah digabungkan, adakah kedua-duanya dikecualikan? Bolehkah saya dapat refund PTPTN? Mengapa masih ada baki pinjaman?",
+        kata_kunci: ["refund", "lebihan bayaran", "pinjaman diploma", "pinjaman gabungan", "baki pinjaman", "penjadualan semula", "careline", "03-2193 3000"],
+        jawapan_rasmi: "- **Pinjaman Gabungan Diploma & Ijazah**: **Tidak.** Hanya pinjaman peringkat **Ijazah Sarjana Muda** sahaja yang dikecualikan. Pinjaman peringkat Diploma masih perlu dibayar balik.\n- **Mengapa Masih Ada Baki Selepas Pengecualian?**: Jika terdapat hutang **WPP (RM1,500)** yang belum selesai, pinjaman diterima selepas tamat pengajian, atau pertindihan tajaan. Baki ini boleh dibayar secara penjadualan semula ansuran bulanan (JBB) atau penyelesaian penuh.\n- **Tuntutan Lebihan Bayaran (Refund)**: Jika anda telah membuat bayaran balik sebelum pengecualian diluluskan, lebihan bayaran boleh dituntut semula melalui aplikasi **myPTPTN**.\n- **Semakan Status Pengecualian**: Semak di Web myPTPTN atau hubungi **Careline PTPTN di 03-2193 3000**.",
+        jawapan_en: "- **Combined Diploma & Degree Loans**: **No.** Only the **Bachelor's Degree** portion is exempted; the Diploma loan must still be repaid.\n- **Why a Balance Might Remain**: Unpaid **WPP (RM1,500)** advance, disbursements received after graduation, or overlapping sponsorship. You can reschedule the remaining balance into monthly installments.\n- **Refund for Overpayment**: Any excess repayments made prior to exemption approval can be refunded via **myPTPTN**.\n- **Check Exemption Status**: Via myPTPTN Web or PTPTN Careline at **03-2193 3000**.",
+        pautan: [
+            { label: "Portal Bayaran Balik PTPTN", url: "https://www.ptptn.gov.my/bayaran-balik/" }
+        ]
+    },
+
+    // --- BAHAGIAN 7: DERMASISWA UNIMAP (SULUNG 4.0, B40 JPA, B40 TVET), OSI e-FUNDING & TALIAN RASMI ---
+    {
+        id: "unimap_sulung",
+        section: "Dermasiswa & Bantuan UniMAP",
+        featuredFaq: true,
+        faqLabel: { ms: "Dermasiswa Siswa SULUNG 4.0 & B40 TVET / JPA", en: "Dermasiswa Siswa SULUNG 4.0 & B40 TVET / JPA" },
+        soalan_utama: "Bagaimana cara memohon Dermasiswa Siswa SULUNG 4.0, Dermasiswa B40 TVET dan B40 JPA di UniMAP?",
+        soalan_en: "How do I apply for Dermasiswa Siswa SULUNG 4.0, Dermasiswa B40 TVET, and B40 JPA at UniMAP?",
+        soalan_alternatif: "Adakah permohonan Siswa SULUNG dibuka? Kakak belajar IPTS layak ke? Penerima B40 TVET kena bayar yuran dulu ke?",
+        kata_kunci: ["sulung", "sulong", "siswa sulung", "anak pertama", "b40 tvet", "b40tvet", "db40", "b40 jpa", "penajaan jpa", "saringan universiti"],
+        jawapan_rasmi: "- **Dermasiswa Siswa SULUNG 4.0 & Dermasiswa B40 TVET**:\n  - Pemilihan adalah berdasarkan **saringan di peringkat universiti**. Pihak JHEP tidak membuka permohonan manual—**sekiranya layak, pelajar akan dihubungi terus** oleh pihak universiti.\n  - Pelajar yang menerima pinjaman **PTPTN masih boleh mendapat manfaat SULUNG** sekiranya memenuhi syarat kelayakan.\n  - Bagi penerima **Dermasiswa B40 TVET** yang menunggu penyaluran dana KPT, sila isi **Borang Penangguhan Bayaran Yuran** di **Pejabat Fakulti masing-masing** beserta lampiran Surat Tawaran B40 TVET.\n- **Dermasiswa B40 JPA (DB40)**:\n  - Semakan hebahan dan keputusan dibuat terus melalui portal rasmi Penajaan JPA di `https://penajaan.jpa.gov.my/`.",
+        jawapan_en: "- **Dermasiswa Siswa SULUNG 4.0 & Dermasiswa B40 TVET**:\n  - Selection is conducted via **university-level screening**. Manual walk-in applications are not opened; **eligible students will be contacted directly** by UniMAP.\n  - PTPTN recipients remain eligible for SULUNG benefits if they meet the criteria.\n  - **B40 TVET** recipients awaiting KPT fund disbursement should submit the **Tuition Fee Deferment Form** at their respective **Faculty Office** with their offer letter attached.\n- **Dermasiswa B40 JPA (DB40)**:\n  - Check announcements and results at the official JPA portal: `https://penajaan.jpa.gov.my/`.",
+        pautan: [
+            { label: "Laman Rasmi JHEP UniMAP", url: "https://jhep.unimap.edu.my/index.php/en/" },
+            { label: "Portal Penajaan JPA", url: "https://penajaan.jpa.gov.my/" }
+        ]
+    },
+    {
+        id: "unimap_osi_surat",
+        section: "Dermasiswa & Bantuan UniMAP",
+        featuredFaq: true,
+        faqLabel: { ms: "Surat Pengesahan Pelajar (ETS/KTMB) & OSI e-Funding", en: "Student Confirmation Letters (ETS) & OSI e-Funding" },
+        soalan_utama: "Bagaimana cara mendapatkan Surat Pengesahan Pelajar (ETS/KTMB) atau pengesahan dokumen melalui OSI e-Funding?",
+        soalan_en: "How do I get a Student Confirmation Letter (ETS/KTMB) or verify documents via OSI e-Funding?",
+        soalan_alternatif: "Cara mohon surat pengesahan pelajar ETS? Pengesahan pendapatan ibu bapa di mana? Bila boleh ambil dokumen di kaunter?",
+        kata_kunci: ["surat pengesahan", "ets", "ktmb", "diskaun", "osi", "e-funding", "efunding", "collect document", "pengesahan pendapatan"],
+        jawapan_rasmi: "- **Surat Pengesahan Belajar Standard (Diskaun ETS / KTMB)**:\n  - Muat turun terus melalui sistem OSI: `OSI > Admission > Confirmation Studies Letter > English / Malay`.\n- **Pengesahan Dokumen Rasmi (Lampiran 3 KTMB, Pengesahan Pendapatan, Pinjaman Negeri, JoC)**:\n  - Mohon secara dalam talian melalui **OSI e-Funding**.\n  - Pihak Unit Pembiayaan akan menyemak dan mengemas kini status permohonan.\n  - **Hadir ke kaunter hanya apabila dokumen telah siap** (rujuk tarikh *Collect Document* dalam sistem): `MOHON ONLINE → SEMAK STATUS → HADIR APABILA DOKUMEN SIAP`.",
+        jawapan_en: "- **Standard Study Confirmation Letter (ETS / KTMB Discount)**:\n  - Download directly via OSI: `OSI > Admission > Confirmation Studies Letter > English / Malay`.\n- **Custom Document Endorsement (OSI e-Funding)**:\n  - Apply online via **OSI e-Funding**.\n  - Only come to the Unit Pembiayaan counter when your status shows ready (check the *Collect Document* date): `APPLY ONLINE → CHECK STATUS → COLLECT WHEN READY`.",
+        pautan: [
+            { label: "Portal Unit Pembiayaan JHEP", url: "https://sites.google.com/unimap.edu.my/unitpembiayaanjhep/" }
+        ]
+    },
+    {
+        id: "unimap_contact",
+        section: "Dermasiswa & Bantuan UniMAP",
+        featuredFaq: true,
+        faqLabel: { ms: "Talian Rasmi Unit Pembiayaan JHEP & PTPTN Perlis", en: "Official Unit Pembiayaan JHEP & PTPTN Perlis Contacts" },
+        soalan_utama: "Di manakah pelajar UniMAP boleh mendapatkan bantuan berkaitan PTPTN dan apakah nombor telefon Unit Pembiayaan?",
+        soalan_en: "Who should UniMAP students contact for PTPTN or financial aid issues?",
+        soalan_alternatif: "Siapa perlu dihubungi jika ada masalah PTPTN? Apakah nombor telefon Unit Pembiayaan, Bendahari dan Kebajikan?",
+        kata_kunci: ["pertanyaan ptptn", "bantuan unimap", "nombor telefon", "talian ptptn", "04-941 4431", "04-970 8181", "hubungi", "saluran whatsapp"],
+        jawapan_rasmi: "Pelajar boleh menghubungi talian rasmi berikut mengikut urusan:\n- **Unit Pembiayaan, JHEP UniMAP**: **04-941 4431**\n- **PTPTN Cawangan Perlis**: **04-970 8181**\n- **Unit Kebajikan, JHEP UniMAP** (Khairat Kematian / Pinjaman Laptop / e-Tabung): **04-941 4430** (`kebajikan@unimap.edu.my`)\n- **Unit Kewangan Pelajar, Jabatan Bendahari** (Pengesahan KWSP / Lejar Yuran OSI / Akaun RHB): **04-941 4033 / 04-941 4021**",
+        jawapan_en: "Students can reach out to the following official numbers:\n- **Unit Pembiayaan, JHEP UniMAP**: **04-941 4431**\n- **PTPTN Perlis Branch**: **04-970 8181**\n- **Student Welfare Unit (Unit Kebajikan JHEP)**: **04-941 4430** (`kebajikan@unimap.edu.my`)\n- **Student Finance Unit (Jabatan Bendahari)**: **04-941 4033 / 04-941 4021**",
+        pautan: [
+            { label: "Saluran WhatsApp & Pertanyaan Unit Pembiayaan", url: "https://sites.google.com/unimap.edu.my/unitpembiayaanjhep/pertanyaan/saluran-whatapps" },
+            { label: "Direktori Cawangan PTPTN", url: "https://www.ptptn.gov.my/pejabat-cawangan-ptptn/" },
+            { label: "Channel WhatsApp Rasmi Unit Pembiayaan", url: "https://whatsapp.com/channel/0029Vb0f9j6ElagrCFT2731y" }
+        ]
     }
 ];
 
-// Authentic Solved Case Log parsed directly from your attached CSV ( linked to parent KB ID for full follow-up support)
-const CSV_SOLVED_RECORDS = [
-    { ref: "PTN-20260930-0008", kbId: "sulung_selection", date: "30/09/2026", category: "Dermasiswa Sulung", q: "Adakah saya boleh mendapat dermasiswa sulung?", a: "Untuk pemilihan Siswa SULUNG adalah berdasarkan saringan di peringkat universiti. Pihak JHEP tidak membuka permohonan secara manual—jika layak, pelajar akan dihubungi terus." },
-    { ref: "PTN-20260930-0009", kbId: "db40_jpa", date: "30/09/2026", category: "Dermasiswa B40JPA", q: "BILA BOLEH MOHON Dermasiswa B40 JPA?", a: "Permohonan DB40 JPA 2026 telah dibuka pada 3–16 Ogos 2026 dan ditutup. Keputusan 2026 boleh disemak mulai 13 Okt – 22 Okt 2026 di https://penajaan.jpa.gov.my/." },
-    { ref: "PTN-20260930-0010", kbId: "ptptn_status_disbursement", date: "30/09/2026", category: "PTPTN", q: "Macam mana nak tahu bila PTPTN tu lulus ke tak?", a: "Semak melalui portal rasmi MyPTPTN → Pinjaman Pendidikan → Semakan Status Permohonan." },
-    { ref: "PTN-20260930-0012", kbId: "ptptn_cancel_multiple_sponsors", date: "30/09/2026", category: "PTPTN", q: "Jikalau saya berjaya dapat pinjaman YBR macam mana nak cancel PTPTN ataupun bayar balik?", a: "Belum hantar perjanjian: Isi Borang Penolakan Tawaran. Sudah hantar: Isi Borang Pembatalan + surat rasmi + surat tawaran YBR. Jika duit dah masuk: Semak jumlah dengan PTPTN dahulu sebelum bayar." },
-    { ref: "PTN-20260930-0014", kbId: "ptptn_status_disbursement", date: "30/09/2026", category: "PTPTN", q: "Bila dapat bayaran pertama PTPTN?", a: "Wang pinjaman dikreditkan dalam 21 hari bekerja daripada tarikh penerimaan dokumen perjanjian lengkap oleh PTPTN." },
-    { ref: "PTN-20260930-0015", kbId: "b40_tvet_deferment", date: "30/09/2026", category: "Dermasiswa B40TVET", q: "Macam mana untuk buat permohonan Dermasiswa B40TVET?", a: "Pemilihan Dermasiswa B40TVET adalah berdasarkan saringan di peringkat universiti. Permohonan tidak dibuka secara manual—jika layak, pelajar akan dihubungi." },
-    { ref: "PTN-20261001-0028", kbId: "bendahari_kwsp_rhb_fees", date: "01/10/2026", category: "Surat Penajaan/Pengesahan Dokumen", q: "Mengapa saya masih dikategorikan penerima KWSP sedangkan kini menerima Lembaga Zakat Selangor di OSI?", a: "Kemukakan salinan borang pengesahan atau dokumen bantuan Dermasiswa Lembaga Zakat Selangor kepada Jabatan Bendahari bagi tujuan kemas kini sistem OSI." },
-    { ref: "PTN-20261002-0984", kbId: "surat_pengesahan_osi_efunding", date: "02/10/2026", category: "Surat Penajaan/Pengesahan Dokumen", q: "Permohonan surat pengesahan untuk Diskaun Pengangkutan Awam KTMB (Lampiran 3) & pengesahan pendapatan?", a: "Permohonan pengesahan dokumen dibuat secara online melalui OSI e-Funding. Hadir ke kaunter hanya apabila status dokumen telah siap (rujuk tarikh Collect Document)." },
-    { ref: "PTN-20261004-0986", kbId: "surat_pengesahan_osi_efunding", date: "04/10/2026", category: "Surat Penajaan/Pengesahan Dokumen", q: "Bagaimana cara mendapatkan surat pengesahan pelajar untuk tambang pelajar ETS?", a: "Muat turun terus melalui sistem: OSI > Admission > Confirmation Studies Letter > English/Malay." },
-    { ref: "PTN-20261006-0987", kbId: "bendahari_kwsp_rhb_fees", date: "06/10/2026", category: "Lain-lain", q: "Permohonan KWSP menyatakan 'Sedang dalam proses untuk Pengesahan Universiti', perlu isi borang apa?", a: "Masih dalam proses pengesahan universiti. Tidak perlu isi borang baharu. Untuk semakan lanjut hubungi Unit Kewangan Pelajar Jabatan Bendahari: 04-941 4033." },
-    { ref: "PTN-20261008-0995", kbId: "joc_campus_bicycle_general", date: "08/10/2026", category: "Lain-lain", q: "Nak tanya ada kerja untuk bekerja di jabatan ke (Job on Campus)?", a: "Hubungi Pusat Kebolehpasaran Graduan & Keusahawanan (CGEE) UniMAP di Aras 2, Pusat Pengajian Siswazah, Pauh Putra (04-941 4396) untuk Program MySISWA Job on Campus (JoC)." },
-    { ref: "PTN-20261009-0999", kbId: "b40_tvet_deferment", date: "09/10/2026", category: "Dermasiswa B40TVET", q: "Penerima Dermasiswa B40 TVET Batch Kedua, minggu depan final exam, risau duit yuran kena bayar dulu ke?", a: "KPT sedang menyalurkan dana. Sila isi borang penangguhan bayaran yuran di pejabat fakulti masing-masing beserta lampiran surat tawaran Dermasiswa B40 TVET." },
-    { ref: "PTN-20261009-1001", kbId: "ptptn_status_disbursement", date: "09/10/2026", category: "PTPTN", q: "PTPTN ditolak sebab pemilihan kursus tidak berdaftar, macam mana nak semak senarai program?", a: "Semak senarai program berdaftar di: https://sites.google.com/unimap.edu.my/unitpembiayaanjhep/permohonan-ptptn/senarai-program" },
-    { ref: "PTN-20261009-1003", kbId: "kebajikan_khairat_laptop_etabung", date: "09/10/2026", category: "Lain-lain", q: "Bagaimana untuk membuat permohonan sumbangan khairat kematian ayah kandung?", a: "Mohon isi dalam OSI dan hantar borang / emel borang kepada Unit Kebajikan: kebajikan@unimap.edu.my." },
-    { ref: "PTN-20261010-1006", kbId: "ptptn_status_disbursement", date: "10/10/2026", category: "PTPTN", q: "Macam mana nak dapatkan Setem Hasil RM10 jika penerima bawah 18 tahun & bila boleh hantar?", a: "Setem hasil boleh dihantar di Kaunter Unit Pembiayaan JHEP waktu pejabat. Pertanyaan LHDN bawah 18 tahun hubungi Agen LHDN Pn. Wani: 013-450 8066." },
-    { ref: "PTN-20261010-1007", kbId: "ptptn_status_disbursement", date: "10/10/2026", category: "PTPTN", q: "Sekiranya ingin mendapatkan tandatangan dan cop rasmi saksi JHEP, perlu bawa borang PTPTN ke pejabat JHEP ke?", a: "Ya, betul. Pelajar perlu membawa borang perjanjian PTPTN secara fizikal ke Kaunter Unit Pembiayaan, Pejabat JHEP (Kampus Alam Pauh Putra) pada waktu pejabat (8:00 pagi – 5:00 petang) untuk mendapatkan tandatangan dan cop rasmi saksi." },
-    { ref: "PTN-20261012-1020", kbId: "kebajikan_khairat_laptop_etabung", date: "12/10/2026", category: "Lain-Lain Biasiswa/Dermasiswa/Pinjaman", q: "Bilakah permohonan pinjaman laptop untuk pelajar dibuka dan bagaimana cara memohonnya?", a: "Hubungi Unit Kebajikan, JHEP UniMAP melalui talian 04-941 4430 untuk bantuan kebajikan/pinjaman peranti pelajar." },
-    { ref: "PTN-20261012-1021", kbId: "sulung_selection", date: "12/10/2026", category: "Dermasiswa Sulung", q: "Adakah permohonan Siswa SULUNG akan menjejaskan permohonan PTPTN saya? Boleh mohon dua-dua?", a: "Pelajar yang menerima pinjaman PTPTN masih boleh mendapat manfaat SULUNG sekiranya memenuhi syarat kelayakan." },
-    { ref: "PTN-20261012-1023", kbId: "sulung_technical_form", date: "12/10/2026", category: "Dermasiswa Sulung", q: "Ibu/bapa bukan warganegara dan guna pasport, ruangan maklumat bapa hanya benarkan No. IC?", a: "Kosongkan ruangan No. KP tersebut dan nyatakan dalam bahagian Tujuan Permohonan bahawa bapa/ibu menggunakan pasport." }
-];
-
-// Track last matched KB item so short follow-ups like "cara?", "di mana?", "bila?", "how?" work naturally!
-let lastMatchedKbItem = null;
+// Conversational memory for short follow-up questions
+let lastMatchedItem = null;
 
 function levenshtein(a, b) {
     if (a.length === 0) return b.length;
@@ -449,12 +606,12 @@ function detectQueryLanguage(text, currentUiLang) {
         "macam", "mana", "nak", "boleh", "tak", "saya", "bila", "siapa", "dekat",
         "tolong", "cara", "mohon", "rayuan", "permohonan", "kelayakan", "adakah",
         "layak", "sudah", "belum", "duit", "yuran", "tangguh", "borang", "surat",
-        "pengesahan", "anak", "sulung", "kakak", "abang", "bapa", "ayah", "ibu", "kematian"
+        "pengesahan", "anak", "sulung", "bapa", "ayah", "ibu", "bayaran", "balik", "pengecualian"
     ];
     const englishWords = [
         "how", "what", "where", "when", "can", "apply", "eligible", "eligibility",
         "check", "status", "cancel", "loan", "defer", "tuition", "letter", "confirmation",
-        "passport", "town", "missing", "first", "child", "scholarship", "approval"
+        "first", "class", "exemption", "repayment", "bank", "account", "age", "limit", "refund"
     ];
 
     const tokens = text.toLowerCase().replace(/[^\w\s]/g, " ").split(/\s+/).filter(Boolean);
@@ -470,7 +627,7 @@ function detectQueryLanguage(text, currentUiLang) {
 }
 
 function searchKnowledgeBase(query, currentUiLang = "ms") {
-    const cleanQuery = query.toLowerCase().replace(/[^\w\s]/g, " ").trim();
+    const cleanQuery = query.toLowerCase().replace(/[^\w\s%]/g, " ").trim();
     const allWords = cleanQuery.split(/\s+/).filter(Boolean);
     const rawTokens = allWords.filter(t => t.length > 1 && !STOPWORDS.has(t));
     const detectedLang = detectQueryLanguage(query, currentUiLang);
@@ -481,68 +638,65 @@ function searchKnowledgeBase(query, currentUiLang = "ms") {
         return { type: "greeting", lang: detectedLang, confidence: 1.0 };
     }
 
-    // 2. Conversational Follow-up Memory Check (e.g., user asks "cara?", "macam mana?", "how?", "di mana?", "nombor telefon?")
-    const followUpTriggers = ["cara", "macam", "mana", "bagaimana", "how", "where", "when", "bila", "lokasi", "nombor", "telefon", "link", "pautan", "syarat", "dokumen", "borang", "steps", "explain", "terangkan", "lanjut"];
-    if (lastMatchedKbItem && allWords.length <= 3 && rawTokens.length <= 1 && allWords.some(w => followUpTriggers.includes(w))) {
+    // 2. Conversational Follow-up Check (e.g., "cara?", "how?", "link?", "pautan?", "syarat?", "dokumen?")
+    const followUpTriggers = ["cara", "macam", "mana", "bagaimana", "how", "where", "when", "bila", "lokasi", "nombor", "telefon", "link", "pautan", "syarat", "dokumen", "borang", "steps", "terangkan", "lanjut"];
+    if (lastMatchedItem && allWords.length <= 3 && rawTokens.length <= 1 && allWords.some(w => followUpTriggers.includes(w))) {
         return {
             type: "match",
             lang: detectedLang,
-            item: lastMatchedKbItem,
-            confidence: 0.95,
+            item: lastMatchedItem,
+            confidence: 0.96,
             isFollowUp: true
         };
     }
 
-    // 3. Score curated bilingual KB items
-    const scoredKB = KNOWLEDGE_BASE.map(item => {
+    // 3. Expand English / Slang Synonyms into Bahasa Melayu keywords
+    let expandedPhrases = [];
+    rawTokens.forEach(token => {
+        if (SYNONYM_EXPANSIONS[token]) {
+            expandedPhrases.push(...SYNONYM_EXPANSIONS[token]);
+        }
+    });
+
+    // 4. Score all items in UNIT_PEMBIAYAAN_DATA
+    const scored = UNIT_PEMBIAYAAN_DATA.map(item => {
         let score = 0;
-        item.keywords.forEach(kw => {
-            if (cleanQuery.includes(kw)) {
-                score += kw.includes(" ") ? 30 : 18;
+        const fullQuestionPool = `${item.soalan_utama} ${item.soalan_en} ${item.soalan_alternatif}`.toLowerCase();
+        const fullAnswerPool = `${item.jawapan_rasmi} ${item.jawapan_en}`.toLowerCase();
+
+        // Exact keyword phrase match
+        item.kata_kunci.forEach(kw => {
+            const kwLower = kw.toLowerCase();
+            if (cleanQuery.includes(kwLower)) {
+                score += kwLower.includes(" ") ? 34 : 20;
             }
+            expandedPhrases.forEach(ep => {
+                if (kwLower.includes(ep) || ep.includes(kwLower)) {
+                    score += 14;
+                }
+            });
         });
 
+        // Token-level & fuzzy matching
         rawTokens.forEach(token => {
-            item.keywords.forEach(kw => {
-                kw.split(/\s+/).forEach(kp => {
-                    if (token === kp) score += 14;
-                    else if (token.length >= 4 && kp.length >= 4 && levenshtein(token, kp) <= 1) score += 9;
+            item.kata_kunci.forEach(kw => {
+                kw.toLowerCase().split(/\s+/).forEach(kp => {
+                    if (token === kp) score += 15;
+                    else if (token.length >= 4 && kp.length >= 4 && levenshtein(token, kp) <= 1) score += 10;
                 });
             });
-            const body = (item.questions.en + " " + item.questions.ms + " " + item.answer.ms).toLowerCase();
-            if (body.includes(token)) score += 4;
+
+            if (fullQuestionPool.includes(token)) score += 9;
+            if (fullAnswerPool.includes(token)) score += 4;
         });
 
-        return { item, score, confidence: Math.min(0.99, score / 36) };
+        return { item, score, confidence: Math.min(0.99, score / 40) };
     }).sort((a, b) => b.score - a.score);
 
-    // 4. Score individual solved records from CSV
-    const scoredCSV = CSV_SOLVED_RECORDS.map(rec => {
-        let score = 0;
-        const recText = (rec.category + " " + rec.q + " " + rec.a).toLowerCase();
-        rawTokens.forEach(token => {
-            if (rec.q.toLowerCase().includes(token)) score += 12;
-            else if (recText.includes(token)) score += 5;
-        });
-        return { rec, score };
-    }).sort((a, b) => b.score - a.score);
+    const best = scored[0];
+    const related = scored.slice(1, 4).filter(r => r.score >= 12).map(r => r.item);
 
-    const bestKB = scoredKB[0];
-    const bestCSV = scoredCSV[0];
-
-    if (bestCSV && bestCSV.score > (bestKB ? bestKB.score : 0) && bestCSV.score >= 16) {
-        const parentKB = KNOWLEDGE_BASE.find(k => k.id === bestCSV.rec.kbId) || (bestKB ? bestKB.item : null);
-        lastMatchedKbItem = parentKB;
-        return {
-            type: "csv_direct",
-            lang: detectedLang,
-            record: bestCSV.rec,
-            parentKB: parentKB,
-            confidence: Math.min(0.98, bestCSV.score / 30)
-        };
-    }
-
-    if (!bestKB || bestKB.score < 8) {
+    if (!best || best.score < 9) {
         return {
             type: "fallback",
             lang: detectedLang,
@@ -550,12 +704,12 @@ function searchKnowledgeBase(query, currentUiLang = "ms") {
         };
     }
 
-    lastMatchedKbItem = bestKB.item;
+    lastMatchedItem = best.item;
     return {
         type: "match",
         lang: detectedLang,
-        item: bestKB.item,
-        matchedRecord: bestCSV && bestCSV.score >= 10 ? bestCSV.rec : null,
-        confidence: bestKB.confidence
+        item: best.item,
+        related: related,
+        confidence: best.confidence
     };
 }

@@ -1,5 +1,5 @@
 // TanyaJHEP — Clean Conversational LLM Interface (Claude / Gemini / ChatGPT style)
-// Powered 100% locally by the Unit Pembiayaan JHEP Knowledge Base (Zero API Credits)
+// Powered 100% locally by the Updated UNIT PEMBIAYAAN.md Dataset (Zero API Credits)
 
 let currentLang = "ms";
 let lastQuestion = "";
@@ -11,36 +11,36 @@ const COPY = {
         topicsHeader: "Soalan Lazim (FAQ)",
         waSidebar: "Hubungi Pegawai JHEP",
         modelSubtag: "Unit Pembiayaan UniMAP",
-        placeholder: "Tanya apa sahaja tentang Dermasiswa Sulung, PTPTN, JPA, Surat Pengesahan...",
+        placeholder: "Tanya tentang PTPTN, WPP RM1,500, Tandatangan Digital RM25, Kelas Pertama 2026, Penangguhan...",
         caption: "Pembantu AI Rasmi Unit Pembiayaan, Jabatan Hal Ehwal Pelajar (JHEP) UniMAP.",
         heroTitle: "Apa yang boleh saya bantu hari ini?",
         heroSub: "Pembantu AI Unit Pembiayaan JHEP UniMAP. Tanya dalam Bahasa Melayu atau Bahasa Inggeris.",
         starters: [
-            { title: "Dermasiswa Siswa SULUNG 4.0", sub: "Kaedah saringan universiti & syarat kelayakan", q: "Bagaimana cara memohon Dermasiswa Siswa SULUNG 4.0 dan syarat kelayakannya?" },
-            { title: "Semakan & Bayaran PTPTN", sub: "Status lulus, tempoh 21 hari bekerja & cop saksi", q: "Bagaimana cara semak kelulusan PTPTN, tarikh duit masuk (21 hari bekerja), cop saksi JHEP & senarai kursus?" },
-            { title: "Batal PTPTN Dapat YBR / JPA", sub: "Langkah batal pinjaman & elak pertindihan tajaan", q: "Bolehkah mohon PTPTN, Yayasan Bank Rakyat (YBR) & Zakat serentak? Bagaimana cara batalkan PTPTN jika dapat tajaan lain?" },
-            { title: "Surat Pengesahan Pelajar & OSI", sub: "Surat diskaun ETS/KTMB & pengesahan pendapatan", q: "Bagaimana cara mendapatkan Surat Pengesahan Pelajar (ETS/KTMB/Penajaan) atau pengesahan dokumen pendapatan melalui OSI e-Funding?" }
+            { title: "Permohonan PTPTN, SSPN & Bank RHB", sub: "Jadual mohon, akaun SSPN Prime (RM20) & RHB Islamic", q: "Bagaimanakah cara memohon pinjaman PTPTN?" },
+            { title: "Tandatangan Digital (RM25) & Tarikh Duit Masuk", sub: "Proses 24 jam bekerja & pengkreditan 21 hari bekerja", q: "Apakah itu tandatangan digital PTPTN dan berapakah bayarannya?" },
+            { title: "WPP (RM1,500) & Biasiswa Anak eKasih (BAeK)", sub: "Tebus WPP di Bank Islam & syarat pertukaran biasiswa BAeK", q: "Apakah itu Wang Pendahuluan Pinjaman (WPP) dan syarat kelayakannya?" },
+            { title: "Pengecualian Kelas Pertama (Syarat 2026) & Penangguhan", sub: "Syarat B40/M40 mulai 2026, dokumen skrol & tangguh bayaran", q: "Apakah syarat pengecualian bayaran balik pinjaman PTPTN bagi graduan Kelas Pertama (termasuk syarat baharu mulai 2026)?" }
         ],
-        greetingReply: `Waalaikumussalam dan salam sejahtera! 👋\n\nSaya ialah pembantu pintar **Unit Pembiayaan JHEP UniMAP**. Anda boleh tanya saya terus mengenai:\n- **Dermasiswa Siswa SULUNG 4.0** (kelayakan, kakak di IPTS, isu pasport/bandar)\n- **Dermasiswa B40 JPA & B40 TVET** (tarikh keputusan & borang tangguh yuran)\n- **Pinjaman PTPTN & YBR** (tarikh duit masuk, batal PTPTN, cop saksi, setem hasil)\n- **Surat Pengesahan Pelajar (ETS/KTMB)**, status **KWSP**, atau **Khairat Kematian**.`,
-        fallbackReply: (q) => `Maaf, saya tidak menemui jawapan khusus bagi **"${q}"** buat masa ini.\n\nAnda boleh:\n1. Cuba tanya menggunakan kata kunci seperti *Dermasiswa Sulung*, *PTPTN*, *B40 TVET*, *JPA*, *Surat ETS*, atau *KWSP*.\n2. Atau terus hantar soalan ini kepada pegawai Unit Pembiayaan JHEP melalui butang di bawah:`
+        greetingReply: `Waalaikumussalam dan salam sejahtera! 👋\n\nSaya ialah pembantu pintar **Unit Pembiayaan JHEP UniMAP** yang telah dikemas kini dengan pangkalan data rasmi baharu. Anda boleh tanya saya mengenai:\n- **Permohonan PTPTN**: Tarikh buka/tutup, kod kursus UniMAP, akaun bank panel **RHB Islamic**, dan akaun **SSPN Prime (RM20)**.\n- **Tawaran & Pengkreditan**: Semakan kelulusan (5 hari bekerja), **Tandatangan Digital (RM25 / 24 jam bekerja)**, dan tempoh duit masuk (**21 hari bekerja**).\n- **WPP (RM1,500) & Biasiswa Anak eKasih (BAeK)**: Cara tebus di Bank Islam, potongan RM500/semester, dan penukaran pinjaman ke biasiswa BAeK.\n- **Penangguhan & Pengecualian Kelas Pertama (Syarat Baharu 2026)**: Syarat B40/M40, pengesahan skrol/transkrip, dan penangguhan kerana sambung belajar atau belum bekerja.`,
+        fallbackReply: (q) => `Maaf, saya tidak menemui jawapan khusus bagi **"${q}"** buat masa ini.\n\nAnda boleh:\n1. Cuba tanya menggunakan kata kunci seperti *tarikh PTPTN*, *bank panel RHB*, *tandatangan digital RM25*, *WPP RM1500*, *BAeK eKasih*, *tangguh bayaran balik*, atau *pengecualian Kelas Pertama 2026*.\n2. Atau terus hubungi Unit Pembiayaan JHEP (**04-941 4431**) / hantar soalan ke WhatsApp di bawah:`
     },
     en: {
         newChat: "+ New Chat",
         topicsHeader: "Frequently Asked Questions",
         waSidebar: "Contact JHEP Officer",
         modelSubtag: "UniMAP Financial Aid Unit",
-        placeholder: "Ask anything about Dermasiswa Sulung, PTPTN, JPA, Confirmation Letters...",
+        placeholder: "Ask about PTPTN, WPP RM1,500, Digital Signature RM25, First Class Exemption 2026, Deferment...",
         caption: "Official AI Assistant for Unit Pembiayaan, Student Affairs Department (JHEP) UniMAP.",
         heroTitle: "How can I help you today?",
         heroSub: "UniMAP JHEP Financial Aid AI Assistant. Ask in English or Bahasa Melayu.",
         starters: [
-            { title: "Dermasiswa Siswa SULUNG 4.0", sub: "University screening rules & eligibility criteria", q: "How do I apply for Dermasiswa Siswa SULUNG 4.0 and check eligibility?" },
-            { title: "PTPTN Approval & Disbursement", sub: "21-working-day payment, witness stamp & courses", q: "How do I check PTPTN approval, payment timeline (21 working days), witness stamp, or registered courses?" },
-            { title: "Cancel PTPTN for YBR / JPA", sub: "How to reject or cancel PTPTN when offered a scholarship", q: "Can I apply for PTPTN, Yayasan Bank Rakyat (YBR), and Zakat together? How do I cancel PTPTN if offered another scholarship?" },
-            { title: "ETS / Study Confirmation Letter", sub: "Download from OSI or verify via OSI e-Funding", q: "How do I get a Student Confirmation Letter (ETS/KTMB/Scholarship) or verify parent income documents via OSI e-Funding?" }
+            { title: "PTPTN Application, SSPN & RHB Bank", sub: "Application schedule, SSPN Prime (RM20) & RHB Islamic panel bank", q: "How do I apply for a PTPTN education loan online?" },
+            { title: "Digital Signature (RM25) & Payout Timeline", sub: "24-working-hour signing & 21-working-day disbursement", q: "What is the PTPTN Digital Signature, how much does it cost (RM25), and how long does it take?" },
+            { title: "WPP Advance (RM1,500) & BAeK eKasih Scholarship", sub: "Cashing WPP at Bank Islam & converting PTPTN to BAeK scholarship", q: "What is Wang Pendahuluan Pinjaman (WPP RM1,500) and who is eligible?" },
+            { title: "First Class Exemption (2026 Rules) & Deferment", sub: "2026 B40/M40 criteria, scroll certification & repayment deferment", q: "What are the eligibility requirements for PTPTN First Class Honours loan exemption starting 1 January 2026?" }
         ],
-        greetingReply: `Hello and Salam Sejahtera! 👋\n\nI am the **UniMAP JHEP Financial Aid Assistant**. Feel free to ask me about:\n- **Dermasiswa Siswa SULUNG 4.0** (screening, IPTS siblings, passport/town form issues)\n- **Dermasiswa B40 JPA & B40 TVET** (result dates & faculty fee deferment)\n- **PTPTN & YBR Loans** (approval status, 21-day payout, canceling PTPTN, witness stamp)\n- **ETS/KTMB Confirmation Letters**, **KWSP** university verification, or **Welfare Aid**.`,
-        fallbackReply: (q) => `I couldn't find a specific answer for **"${q}"** at the moment.\n\nYou can:\n1. Try asking with keywords like *Dermasiswa Sulung*, *PTPTN*, *B40 TVET*, *JPA*, *ETS letter*, or *KWSP*.\n2. Or send this question directly to a JHEP officer on WhatsApp below:`
+        greetingReply: `Hello and Salam Sejahtera! 👋\n\nI am the updated **UniMAP JHEP Financial Aid Assistant**. Feel free to ask me about:\n- **PTPTN Applications**: Opening/closing schedules, UniMAP course codes, **RHB Islamic** panel bank account, and **SSPN Prime (RM20)**.\n- **Agreement & Disbursement**: Approval check (5 working days), **Digital Signature (RM25 / 24 working hours)**, and loan payout (**21 working days**).\n- **WPP Advance (RM1,500) & BAeK eKasih Scholarship**: Cashing WPP at Bank Islam, RM500/semester deduction, and BAeK scholarship conversion.\n- **Repayment Deferment & First Class Exemption (New 2026 Rules)**: B40/M40 household criteria, scroll certification, and deferment for further studies or unemployment.`,
+        fallbackReply: (q) => `I couldn't find a specific answer for **"${q}"** at the moment.\n\nYou can:\n1. Try asking with keywords like *PTPTN deadline*, *RHB panel bank*, *digital signature RM25*, *WPP RM1500*, *BAeK eKasih*, *repayment deferment*, or *First Class exemption 2026*.\n2. Or contact Unit Pembiayaan JHEP (**04-941 4431**) / send a WhatsApp message below:`
     }
 };
 
@@ -48,8 +48,6 @@ function renderMarkdownClean(md) {
     if (!md) return "";
     let html = md
         .replace(/^###\s?(.*$)/gim, '<h3>$1</h3>')
-        .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
-        .replace(/(^|[\s(])(https?:\/\/[^\s)<]+)/g, '$1<a href="$2" target="_blank" rel="noopener">$2</a>')
         .replace(/`([^`]+)`/g, '<code>$1</code>')
         .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
         .replace(/\*(.*?)\*/g, '<em>$1</em>');
@@ -105,9 +103,10 @@ function setLanguage(lang) {
 
 function renderSidebarFAQs() {
     const container = document.getElementById("sidebarTopics");
-    container.innerHTML = KNOWLEDGE_BASE.map(item => {
-        const title = item.faqTitle[currentLang] || item.faqTitle.ms;
-        const q = item.questions[currentLang] || item.questions.ms;
+    const featured = UNIT_PEMBIAYAAN_DATA.filter(item => item.featuredFaq);
+    container.innerHTML = featured.map(item => {
+        const title = item.faqLabel[currentLang] || item.faqLabel.ms;
+        const q = currentLang === "en" ? item.soalan_en : item.soalan_utama;
         return `
             <button class="faq-card-btn" onclick="askQuestion('${q.replace(/'/g, "\\'")}')">
                 <span class="faq-q-icon">Q.</span>
@@ -139,7 +138,7 @@ function renderHeroEmptyState() {
 
 function startNewChat() {
     hasStartedChat = false;
-    lastMatchedKbItem = null;
+    lastMatchedItem = null;
     renderHeroEmptyState();
 }
 
@@ -174,30 +173,26 @@ function askQuestion(text) {
     col.appendChild(assistantTurn);
     scroll.scrollTop = scroll.scrollHeight;
 
-    // 3. Query our local Knowledge Base (with conversational follow-up memory)
+    // 3. Query our local Knowledge Base
     const result = searchKnowledgeBase(query, currentLang);
 
     setTimeout(() => {
         const bodyEl = assistantTurn.querySelector(".assistant-body");
         let answerMd = "";
         let sourceRef = "";
-        let followups = [];
+        let links = [];
+        let relatedItems = [];
         let showWaButton = false;
 
         if (result.type === "greeting") {
             answerMd = COPY[result.lang].greetingReply;
-        } else if (result.type === "csv_direct") {
-            answerMd = result.record.a;
-            sourceRef = `Unit Pembiayaan JHEP • Rujukan: ${result.record.ref}`;
-            if (result.parentKB && result.parentKB.quickActions) {
-                followups = result.parentKB.quickActions;
-            }
         } else if (result.type === "match") {
-            answerMd = result.item.answer[result.lang] || result.item.answer[currentLang];
-            sourceRef = result.matchedRecord
-                ? `Unit Pembiayaan JHEP • Rujukan: ${result.matchedRecord.ref}`
-                : `Unit Pembiayaan JHEP (${result.item.category})`;
-            followups = result.item.quickActions || [];
+            const heading = result.lang === "en" ? result.item.soalan_en : result.item.soalan_utama;
+            const bodyText = result.lang === "en" ? result.item.jawapan_en : result.item.jawapan_rasmi;
+            answerMd = `### ${heading}\n${bodyText}`;
+            sourceRef = `Unit Pembiayaan JHEP • ${result.item.section}`;
+            links = result.item.pautan || [];
+            relatedItems = result.related || [];
         } else {
             answerMd = COPY[result.lang].fallbackReply(query);
             showWaButton = true;
@@ -205,24 +200,29 @@ function askQuestion(text) {
 
         let html = renderMarkdownClean(answerMd);
 
+        // Render Official Links (PAUTAN) as clickable pills
+        if (links.length > 0) {
+            html += `<div class="official-links-box">` +
+                links.map(l => `<a href="${l.url}" target="_blank" rel="noopener" class="official-link-btn">🔗 ${l.label} ↗</a>`).join("") +
+                `</div>`;
+        }
+
         if (sourceRef) {
             html += `<div class="source-footnote">✓ ${sourceRef}</div>`;
         }
 
         bodyEl.innerHTML = html;
 
-        // Add subtle follow-up pills if available
-        if (followups.length > 0) {
+        // Add related follow-up pills from the dataset so students can explore further
+        if (relatedItems.length > 0) {
             const fRow = document.createElement("div");
             fRow.className = "followup-row";
-            followups.forEach(f => {
+            relatedItems.slice(0, 2).forEach(rel => {
                 const btn = document.createElement("button");
                 btn.className = "followup-pill";
-                btn.textContent = f.label[result.lang] || f.label[currentLang] || f.label.ms;
-                btn.onclick = () => {
-                    const nextQ = f.query[result.lang] || f.query[currentLang] || f.query.ms;
-                    askQuestion(nextQ);
-                };
+                const qText = result.lang === "en" ? rel.soalan_en : rel.soalan_utama;
+                btn.textContent = "↪ " + qText;
+                btn.onclick = () => askQuestion(qText);
                 fRow.appendChild(btn);
             });
             bodyEl.appendChild(fRow);
@@ -242,7 +242,7 @@ function askQuestion(text) {
         }
 
         scroll.scrollTop = scroll.scrollHeight;
-    }, 300);
+    }, 280);
 }
 
 // WhatsApp Officer Escalation Modal
