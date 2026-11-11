@@ -38,7 +38,8 @@ const SYNONYM_EXPANSIONS = {
     "repayment": ["bayaran balik", "12 bulan", "ujrah"],
     "deferment": ["penangguhan bayaran balik", "tangguh bayaran", "tidak bekerja", "menganggur", "sambung belajar", "24 bulan", "ccris"],
     "firstclass": ["kelas pertama", "pengecualian bayaran balik", "b40", "m40", "belanjawan 2026", "skrol", "transkrip", "refund", "lebihan bayaran"],
-    "contact": ["nombor telefon", "04-941 4431", "04-970 8181", "hubungi"]
+    "scam": ["scammer", "akaun bermasalah", "akaun beku", "bon tanggung rugi", "polis report", "laporan polis", "tukar akaun bank", "akaun tidak dapat digunakan"],
+    "contact": ["nombor telefon", "04-941 4431", "04-970 8181", "hubungi", "pembiayaan@unimap.edu.my"]
 };
 
 // Complete 78-Item Dataset from UNIT PEMBIAYAAN.md + Key UniMAP Dermasiswa & OSI FAQs
@@ -428,6 +429,22 @@ const UNIT_PEMBIAYAAN_DATA = [
             { label: "Panduan Tukar Program PTPTN (JHEP)", url: "https://sites.google.com/unimap.edu.my/unitpembiayaanjhep/ptptn/tukar-program" }
         ]
     },
+    {
+        id: "ptptn_23",
+        section: "Pengeluaran, Yuran & Pertukaran Program",
+        featuredFaq: true,
+        faqLabel: { ms: "Masalah Akaun Bank / Isu Scammer (Tukar Akaun)", en: "Bank Account Issue / Scammer Case Documents" },
+        soalan_utama: "Apakah dokumen yang diperlukan jika akaun bank mengalami masalah tidak dapat digunakan atau isu scammer?",
+        soalan_en: "What documents are required if my bank account cannot be used (frozen/blocked) or is involved in a scammer issue?",
+        soalan_alternatif: "Akaun bank kena scam atau beku, macam mana nak tukar akaun PTPTN? Dokumen tukar akaun bank PTPTN sebab scammer? Bon tanggung rugi PTPTN?",
+        kata_kunci: ["scammer", "scam", "akaun mengalami masalah", "akaun tidak dapat digunakan", "akaun beku", "tukar akaun bank", "bon tanggung rugi", "setem hasil", "lhdn", "polis report", "laporan polis", "akaun bank baru", "penyata bank", "pembiayaan@unimap.edu.my"],
+        jawapan_rasmi: "Sekiranya akaun bank pelajar mengalami masalah **tidak dapat digunakan** atau terlibat dengan **isu scammer**, sila sediakan dokumen berikut:\n1. **Bon Tanggung Rugi** dan **Setem Hasil LHDN** *(boleh didapati di dalam laman web rasmi PTPTN)*\n2. **Salinan Kad Pengenalan** pelajar\n3. **Surat rasmi** daripada pelajar\n4. **Laporan Polis** (*Police Report*)\n5. **Akaun bank baharu & penyata bank**\n\n📧 **Cara Penghantaran**: E-melkan kesemua maklumat dan dokumen tersebut kepada Unit Pembiayaan JHEP di **`pembiayaan@unimap.edu.my`**.",
+        jawapan_en: "If your bank account **cannot be used** (e.g., frozen/inactive) or is affected by a **scammer issue**, please prepare the following documents:\n1. **Indemnity Bond (Bon Tanggung Rugi)** and **LHDN Revenue Stamp (Setem Hasil)** *(available on the official PTPTN website)*\n2. **Copy of Student's Identity Card (MyKad)**\n3. **Official letter** from the student\n4. **Police Report**\n5. **New bank account details & bank statement**\n\n📧 **How to Submit**: Email all the required documents to Unit Pembiayaan JHEP at **`pembiayaan@unimap.edu.my`**.",
+        pautan: [
+            { label: "Laman Rasmi PTPTN (Muat Turun Borang)", url: "https://www.ptptn.gov.my/" },
+            { label: "E-mel Unit Pembiayaan (pembiayaan@unimap.edu.my)", url: "mailto:pembiayaan@unimap.edu.my" }
+        ]
+    },
 
     // --- BAHAGIAN 5: BAYARAN BALIK & PENANGGUHAN BAYARAN BALIK PTPTN ---
     {
@@ -569,8 +586,8 @@ const UNIT_PEMBIAYAAN_DATA = [
         soalan_en: "Who should UniMAP students contact for PTPTN or financial aid issues?",
         soalan_alternatif: "Siapa perlu dihubungi jika ada masalah PTPTN? Apakah nombor telefon Unit Pembiayaan, Bendahari dan Kebajikan?",
         kata_kunci: ["pertanyaan ptptn", "bantuan unimap", "nombor telefon", "talian ptptn", "04-941 4431", "04-970 8181", "hubungi", "saluran whatsapp"],
-        jawapan_rasmi: "Pelajar boleh menghubungi talian rasmi berikut mengikut urusan:\n- **Unit Pembiayaan, JHEP UniMAP**: **04-941 4431**\n- **PTPTN Cawangan Perlis**: **04-970 8181**\n- **Unit Kebajikan, JHEP UniMAP** (Khairat Kematian / Pinjaman Laptop / e-Tabung): **04-941 4430** (`kebajikan@unimap.edu.my`)\n- **Unit Kewangan Pelajar, Jabatan Bendahari** (Pengesahan KWSP / Lejar Yuran OSI / Akaun RHB): **04-941 4033 / 04-941 4021**",
-        jawapan_en: "Students can reach out to the following official numbers:\n- **Unit Pembiayaan, JHEP UniMAP**: **04-941 4431**\n- **PTPTN Perlis Branch**: **04-970 8181**\n- **Student Welfare Unit (Unit Kebajikan JHEP)**: **04-941 4430** (`kebajikan@unimap.edu.my`)\n- **Student Finance Unit (Jabatan Bendahari)**: **04-941 4033 / 04-941 4021**",
+        jawapan_rasmi: "Pelajar boleh menghubungi talian rasmi berikut mengikut urusan:\n- **Unit Pembiayaan, JHEP UniMAP**: **04-941 4431** (`pembiayaan@unimap.edu.my`)\n- **PTPTN Cawangan Perlis**: **04-970 8181**\n- **Unit Kebajikan, JHEP UniMAP** (Khairat Kematian / Pinjaman Laptop / e-Tabung): **04-941 4430** (`kebajikan@unimap.edu.my`)\n- **Unit Kewangan Pelajar, Jabatan Bendahari** (Pengesahan KWSP / Lejar Yuran OSI / Akaun RHB): **04-941 4033 / 04-941 4021**",
+        jawapan_en: "Students can reach out to the following official numbers:\n- **Unit Pembiayaan, JHEP UniMAP**: **04-941 4431** (`pembiayaan@unimap.edu.my`)\n- **PTPTN Perlis Branch**: **04-970 8181**\n- **Student Welfare Unit (Unit Kebajikan JHEP)**: **04-941 4430** (`kebajikan@unimap.edu.my`)\n- **Student Finance Unit (Jabatan Bendahari)**: **04-941 4033 / 04-941 4021**",
         pautan: [
             { label: "Saluran WhatsApp & Pertanyaan Unit Pembiayaan", url: "https://sites.google.com/unimap.edu.my/unitpembiayaanjhep/pertanyaan/saluran-whatapps" },
             { label: "Direktori Cawangan PTPTN", url: "https://www.ptptn.gov.my/pejabat-cawangan-ptptn/" },
